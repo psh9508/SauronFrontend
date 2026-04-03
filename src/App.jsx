@@ -1,4 +1,42 @@
+import { useState } from 'react'
+
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [username, setUsername] = useState('')
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.target)
+    setUsername(formData.get('username') || 'User')
+    setIsLoggedIn(true)
+  }
+
+  if (isLoggedIn) {
+    return (
+      <main className="app-shell logged-in">
+        <div className="fire-background" aria-hidden="true">
+          <div className="fire-sky" />
+          <div className="heat-wave wave-one" />
+          <div className="heat-wave wave-two" />
+          <div className="heat-wave wave-three" />
+          <div className="flame-layer flame-back" />
+          <div className="flame-layer flame-mid" />
+          <div className="flame-layer flame-front" />
+          <div className="fire-glow glow-center" />
+          <div className="fire-glow glow-left" />
+          <div className="fire-glow glow-right" />
+        </div>
+        <div className="welcome-screen">
+          <h1 className="welcome-title">환영합니다, {username}</h1>
+          <p className="welcome-subtitle">로그인 성공</p>
+          <button className="logout-button" onClick={() => setIsLoggedIn(false)}>
+            로그아웃
+          </button>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="app-shell">
       <div className="fire-background" aria-hidden="true">
@@ -159,13 +197,8 @@ function App() {
           </div>
         </div>
 
-        <section className="login-panel" aria-label="사우론 로그인 패널">
-          <header className="panel-header">
-            <p className="eyebrow">The Lidless Eye Awaits</p>
-            <h1>SAURON ACCESS</h1>
-          </header>
-
-          <form className="login-form">
+        <section className="login-panel" aria-label="로그인 패널">
+          <form className="login-form" onSubmit={handleSubmit}>
             <label className="field">
               <span>아이디</span>
               <input type="text" name="username" placeholder="dark-lord" autoComplete="username" />
