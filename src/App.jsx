@@ -15,16 +15,36 @@ const formatProjectDate = (value) => {
   return date.toLocaleDateString()
 }
 
-const normalizeProject = (project) => ({
-  id: project.project_id ?? project.id ?? `${project.owner}-${project.repo_name ?? project.repoName ?? Date.now()}`,
-  sourceCode: project.provider ?? project.sourceCode ?? 'github',
-  owner: project.owner ?? '-',
-  repoName: project.repo_name ?? project.repoName ?? '-',
-  pemFileName: project.pem_file_name ?? project.pemFileName ?? '',
-  appId: project.app_id ?? project.appId ?? '-',
-  installId: project.installation_id ?? project.installId ?? '-',
-  createdAt: formatProjectDate(project.created_at ?? project.createdAt),
-})
+const formatProviderLabel = (provider) => (provider === 'gitlab' ? 'GitLab' : 'GitHub')
+
+const formatAuthTypeLabel = (authType) => {
+  if (authType === 'gitlab_pat') {
+    return 'GitLab PAT'
+  }
+
+  return 'GitHub App'
+}
+
+const normalizeProject = (project) => {
+  const sourceCode = project.provider ?? project.sourceCode ?? 'github'
+  const authConfig = project.auth_config ?? project.authConfig ?? {}
+  const authType = authConfig.type ?? (sourceCode === 'gitlab' ? 'gitlab_pat' : 'github_app')
+
+  return {
+    id: project.project_id ?? project.id ?? `${project.owner}-${project.repo_name ?? project.repoName ?? Date.now()}`,
+    sourceCode,
+    owner: project.owner ?? '-',
+    repoName: project.repo_name ?? project.repoName ?? '-',
+    pemFileName: project.pem_file_name ?? project.pemFileName ?? '',
+    authType,
+    appId: authConfig.app_id ?? project.app_id ?? project.appId ?? '-',
+    installId: authConfig.installation_id ?? project.installation_id ?? project.installId ?? '-',
+    isActive: project.is_active ?? project.isActive ?? true,
+    createdAt: formatProjectDate(project.created_at ?? project.createdAt),
+  }
+}
+
+const extractConnection = (payload) => payload?.data ?? payload?.connection ?? payload
 
 const extractProjects = (payload) => {
   if (Array.isArray(payload)) {
@@ -55,6 +75,10 @@ const buildProjectIssues = (project) => {
     return []
   }
 
+  const authIssueDescription = project.authType === 'gitlab_pat'
+    ? 'GitLab Personal Access Token 권한 범위와 만료 정책 확인이 필요합니다.'
+    : `GitHub App ID ${project.appId} 와 Install ID ${project.installId} 매핑 확인이 필요합니다.`
+
   return [
     {
       id: `${project.id}-issue-1`,
@@ -68,7 +92,7 @@ const buildProjectIssues = (project) => {
       status: 'In Review',
       priority: 'Medium',
       title: `${project.repoName} 배포 전 환경변수 점검`,
-      description: `GitHub App ID ${project.appId} 와 Install ID ${project.installId} 매핑 확인이 필요합니다.`,
+      description: authIssueDescription,
     },
     {
       id: `${project.id}-issue-3`,
@@ -96,6 +120,7 @@ function App() {
   const [pemFile, setPemFile] = useState(null)
   const [appId, setAppId] = useState('')
   const [installId, setInstallId] = useState('')
+  const [accessToken, setAccessToken] = useState('')
   const [owner, setOwner] = useState('')
   const [repoName, setRepoName] = useState('')
   const [isDragging, setIsDragging] = useState(false)
@@ -120,10 +145,24 @@ function App() {
   const handleDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
+
+    if (sourceCode !== 'github') {
+      return
+    }
+
     const file = e.dataTransfer.files[0]
     if (file && file.name.endsWith('.pem')) {
       setPemFile(file)
     }
+  }
+
+  const handleSourceCodeChange = (value) => {
+    setSourceCode(value)
+    setPemFile(null)
+    setAppId('')
+    setInstallId('')
+    setAccessToken('')
+    setIsDragging(false)
   }
 
   const handleSubmit = (e) => {
@@ -175,55 +214,88 @@ function App() {
     }
   }, [projects, selectedIssueProjectId])
 
+  const ownerValue = owner.trim()
+  const repoNameValue = repoName.trim()
+  const appIdValue = appId.trim()
+  const installIdValue = installId.trim()
+  const accessTokenValue = accessToken.trim()
+  const isGithubFormValid = Boolean(sourceCode === 'github' && pemFile && appIdValue && installIdValue && ownerValue && repoNameValue)
+  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && ownerValue && repoNameValue)
+  const isProjectFormValid = isGithubFormValid || isGitlabFormValid
+
   const handleAddProject = async () => {
-    if (sourceCode === 'github' && pemFile && appId && installId && owner && repoName) {
-      setIsLoading(true)
-      try {
-        // PEM 파일 내용 읽기
+    if (!isProjectFormValid) {
+      return
+    }
+
+    setIsLoading(true)
+    try {
+      let authConfig
+
+      if (sourceCode === 'github') {
         const pemContent = await pemFile.text()
-
-        const requestBody = {
-          project_id: 0,
-          provider: 'github',
-          owner: owner,
-          repo_name: repoName,
-          app_id: appId,
-          installation_id: installId,
-          pem: pemContent
+        authConfig = {
+          type: 'github_app',
+          app_id: appIdValue,
+          installation_id: installIdValue,
+          pem: pemContent,
         }
-
-        const response = await fetch(`${config.apiBaseUrl}/source_control/connections`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody)
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          const newProject = normalizeProject({
-            ...data,
-            provider: sourceCode,
-            owner,
-            repo_name: repoName,
-            pem_file_name: pemFile.name,
-            app_id: appId,
-            installation_id: installId,
-            created_at: new Date().toISOString()
-          })
-          setProjects(prevProjects => [...prevProjects, newProject])
-          resetForm()
-          setShowModal(false)
-        } else {
-          alert('프로젝트 등록에 실패했습니다.')
+      } else {
+        authConfig = {
+          type: 'gitlab_pat',
+          access_token: accessTokenValue,
         }
-      } catch (error) {
-        console.error('Error:', error)
-        alert('서버 연결에 실패했습니다.')
-      } finally {
-        setIsLoading(false)
       }
+
+      const requestBody = {
+        project_id: 0,
+        provider: sourceCode,
+        owner: ownerValue,
+        repo_name: repoNameValue,
+        auth_config: authConfig,
+      }
+
+      const response = await fetch(`${config.apiBaseUrl}/source_control/connections`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      })
+
+      if (!response.ok) {
+        throw new Error(`프로젝트 등록 실패: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const createdConnection = extractConnection(data)
+      const newProject = normalizeProject({
+        ...createdConnection,
+        provider: sourceCode,
+        owner: ownerValue,
+        repo_name: repoNameValue,
+        pem_file_name: sourceCode === 'github' ? pemFile?.name ?? '' : '',
+        auth_config: {
+          ...createdConnection?.auth_config,
+          type: createdConnection?.auth_config?.type ?? authConfig.type,
+          ...(sourceCode === 'github'
+            ? {
+                app_id: appIdValue,
+                installation_id: installIdValue,
+              }
+            : {}),
+        },
+        created_at: createdConnection?.created_at ?? new Date().toISOString(),
+      })
+
+      setProjects(prevProjects => [...prevProjects, newProject])
+      resetForm()
+      setShowModal(false)
+    } catch (error) {
+      console.error('Error:', error)
+      alert(error.message || '서버 연결에 실패했습니다.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -232,8 +304,10 @@ function App() {
     setPemFile(null)
     setAppId('')
     setInstallId('')
+    setAccessToken('')
     setOwner('')
     setRepoName('')
+    setIsDragging(false)
   }
 
   const handleCloseModal = () => {
@@ -340,8 +414,15 @@ function App() {
                       <div className="project-info">
                         <h3 className="project-name">{project.owner}/{project.repoName}</h3>
                         <p className="project-detail project-id">Project ID: {project.id}</p>
-                        <p className="project-detail">Provider: GitHub</p>
-                        <p className="project-detail">App ID: {project.appId} | Install ID: {project.installId}</p>
+                        <p className="project-detail">Provider: {formatProviderLabel(project.sourceCode)} | Auth: {formatAuthTypeLabel(project.authType)}</p>
+                        {project.authType === 'github_app' ? (
+                          <p className="project-detail">App ID: {project.appId} | Install ID: {project.installId}</p>
+                        ) : (
+                          <p className="project-detail">Token credentials are stored server-side.</p>
+                        )}
+                        {project.pemFileName && (
+                          <p className="project-detail">PEM File: {project.pemFileName}</p>
+                        )}
                       </div>
                       <span className="project-date">{project.createdAt}</span>
                     </div>
@@ -474,11 +555,12 @@ function App() {
                   <label>SourceCode</label>
                   <select
                     value={sourceCode}
-                    onChange={e => setSourceCode(e.target.value)}
+                    onChange={e => handleSourceCodeChange(e.target.value)}
                     className="form-select"
                   >
                     <option value="">선택하세요</option>
                     <option value="github">GitHub</option>
+                    <option value="gitlab">GitLab</option>
                   </select>
                 </div>
 
@@ -495,7 +577,7 @@ function App() {
                         <input
                           type="file"
                           accept=".pem"
-                          onChange={e => setPemFile(e.target.files[0])}
+                          onChange={e => setPemFile(e.target.files[0] ?? null)}
                           id="pem-file"
                         />
                         <label htmlFor="pem-file" className="file-label">
@@ -536,14 +618,31 @@ function App() {
                         className="form-input"
                       />
                     </div>
+                  </>
+                )}
 
+                {sourceCode === 'gitlab' && (
+                  <div className="form-field">
+                    <label>Access Token</label>
+                    <input
+                      type="password"
+                      value={accessToken}
+                      onChange={e => setAccessToken(e.target.value)}
+                      placeholder="GitLab PAT를 입력하세요"
+                      className="form-input"
+                    />
+                  </div>
+                )}
+
+                {sourceCode && (
+                  <>
                     <div className="form-field">
                       <label>Owner</label>
                       <input
                         type="text"
                         value={owner}
                         onChange={e => setOwner(e.target.value)}
-                        placeholder="GitHub 소유자명 (예: octocat)"
+                        placeholder={sourceCode === 'gitlab' ? 'GitLab 그룹/사용자명 (예: my-group)' : 'GitHub 소유자명 (예: octocat)'}
                         className="form-input"
                       />
                     </div>
@@ -554,7 +653,7 @@ function App() {
                         type="text"
                         value={repoName}
                         onChange={e => setRepoName(e.target.value)}
-                        placeholder="레포지토리 이름 (예: my-repo)"
+                        placeholder={sourceCode === 'gitlab' ? '프로젝트 이름 (예: my-project)' : '레포지토리 이름 (예: my-repo)'}
                         className="form-input"
                       />
                     </div>
@@ -568,7 +667,7 @@ function App() {
                 <button
                   className={`btn-register ${isLoading ? 'loading' : ''}`}
                   onClick={handleAddProject}
-                  disabled={!(sourceCode === 'github' && pemFile && appId && installId && owner && repoName) || isLoading}
+                  disabled={!isProjectFormValid || isLoading}
                 >
                   {isLoading ? '등록 중...' : '등록'}
                 </button>
