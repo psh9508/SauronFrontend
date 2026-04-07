@@ -29,12 +29,14 @@ const normalizeProject = (project) => {
   const sourceCode = project.provider ?? project.sourceCode ?? 'github'
   const authConfig = project.auth_config ?? project.authConfig ?? {}
   const authType = authConfig.type ?? (sourceCode === 'gitlab' ? 'gitlab_pat' : 'github_app')
+  const projectName = project.project_name ?? project.projectName ?? ''
 
   return {
-    id: project.project_id ?? project.id ?? `${project.owner}-${project.repo_name ?? project.repoName ?? Date.now()}`,
+    id: project.project_id ?? project.id ?? `${project.owner ?? projectName}-${project.repo_name ?? project.repoName ?? Date.now()}`,
     sourceCode,
-    owner: project.owner ?? '-',
-    repoName: project.repo_name ?? project.repoName ?? '-',
+    owner: project.owner ?? projectName ?? '-',
+    repoName: project.repo_name ?? project.repoName ?? projectName ?? '-',
+    projectName,
     pemFileName: project.pem_file_name ?? project.pemFileName ?? '',
     authType,
     appId: authConfig.app_id ?? project.app_id ?? project.appId ?? '-',
@@ -76,30 +78,30 @@ const buildProjectIssues = (project) => {
   }
 
   const authIssueDescription = project.authType === 'gitlab_pat'
-    ? 'GitLab Personal Access Token 권한 범위와 만료 정책 확인이 필요합니다.'
-    : `GitHub App ID ${project.appId} 와 Install ID ${project.installId} 매핑 확인이 필요합니다.`
+    ? 'Please verify GitLab Personal Access Token scope and expiration policy.'
+    : `Please verify GitHub App ID ${project.appId} and Install ID ${project.installId} mapping.`
 
   return [
     {
       id: `${project.id}-issue-1`,
       status: 'Open',
       priority: 'High',
-      title: `${project.repoName} 인증 흐름 예외 처리`,
-      description: `${project.owner}/${project.repoName}에서 로그인 실패 시 응답 메시지와 상태 코드를 정리해야 합니다.`,
+      title: `${project.repoName} Authentication Flow Exception Handling`,
+      description: `Need to organize response messages and status codes for login failures in ${project.owner}/${project.repoName}.`,
     },
     {
       id: `${project.id}-issue-2`,
       status: 'In Review',
       priority: 'Medium',
-      title: `${project.repoName} 배포 전 환경변수 점검`,
+      title: `${project.repoName} Pre-deployment Environment Variables Check`,
       description: authIssueDescription,
     },
     {
       id: `${project.id}-issue-3`,
       status: 'Planned',
       priority: 'Low',
-      title: `${project.repoName} 운영 로그 가시성 개선`,
-      description: `프로젝트 ID ${project.id} 기준으로 이슈 추적 로그와 대시보드 연결 포인트를 추가합니다.`,
+      title: `${project.repoName} Operations Log Visibility Improvement`,
+      description: `Add issue tracking logs and dashboard connection points based on Project ID ${project.id}.`,
     },
   ]
 }
@@ -123,6 +125,7 @@ function App() {
   const [accessToken, setAccessToken] = useState('')
   const [owner, setOwner] = useState('')
   const [repoName, setRepoName] = useState('')
+  const [gitlabProjectName, setGitlabProjectName] = useState('')
   const [isDragging, setIsDragging] = useState(false)
 
   // Analyze 상태
@@ -162,6 +165,7 @@ function App() {
     setAppId('')
     setInstallId('')
     setAccessToken('')
+    setGitlabProjectName('')
     setIsDragging(false)
   }
 
@@ -187,7 +191,7 @@ function App() {
       setProjects(extractProjects(data).map(normalizeProject))
     } catch (error) {
       console.error('Failed to load projects:', error)
-      setProjectsError('기존 프로젝트 목록을 불러오지 못했습니다. 서버에 GET /source_control/connections API가 필요합니다.')
+      setProjectsError('Failed to load projects. Server requires GET /source_control/connections API.')
     } finally {
       setIsFetchingProjects(false)
     }
@@ -219,8 +223,9 @@ function App() {
   const appIdValue = appId.trim()
   const installIdValue = installId.trim()
   const accessTokenValue = accessToken.trim()
+  const gitlabProjectNameValue = gitlabProjectName.trim()
   const isGithubFormValid = Boolean(sourceCode === 'github' && pemFile && appIdValue && installIdValue && ownerValue && repoNameValue)
-  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && ownerValue && repoNameValue)
+  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && gitlabProjectNameValue)
   const isProjectFormValid = isGithubFormValid || isGitlabFormValid
 
   const handleAddProject = async () => {
@@ -247,13 +252,20 @@ function App() {
         }
       }
 
-      const requestBody = {
-        project_id: 0,
-        provider: sourceCode,
-        owner: ownerValue,
-        repo_name: repoNameValue,
-        auth_config: authConfig,
-      }
+      const requestBody = sourceCode === 'github'
+        ? {
+            project_id: 0,
+            provider: sourceCode,
+            owner: ownerValue,
+            repo_name: repoNameValue,
+            auth_config: authConfig,
+          }
+        : {
+            project_id: 0,
+            provider: sourceCode,
+            project_name: gitlabProjectNameValue,
+            auth_config: authConfig,
+          }
 
       const response = await fetch(`${config.apiBaseUrl}/source_control/connections`, {
         method: 'POST',
@@ -264,7 +276,7 @@ function App() {
       })
 
       if (!response.ok) {
-        throw new Error(`프로젝트 등록 실패: ${response.status}`)
+        throw new Error(`Failed to register project: ${response.status}`)
       }
 
       const data = await response.json()
@@ -272,8 +284,9 @@ function App() {
       const newProject = normalizeProject({
         ...createdConnection,
         provider: sourceCode,
-        owner: ownerValue,
-        repo_name: repoNameValue,
+        owner: sourceCode === 'github' ? ownerValue : gitlabProjectNameValue,
+        repo_name: sourceCode === 'github' ? repoNameValue : gitlabProjectNameValue,
+        project_name: sourceCode === 'gitlab' ? gitlabProjectNameValue : undefined,
         pem_file_name: sourceCode === 'github' ? pemFile?.name ?? '' : '',
         auth_config: {
           ...createdConnection?.auth_config,
@@ -293,7 +306,7 @@ function App() {
       setShowModal(false)
     } catch (error) {
       console.error('Error:', error)
-      alert(error.message || '서버 연결에 실패했습니다.')
+      alert(error.message || 'Failed to connect to server.')
     } finally {
       setIsLoading(false)
     }
@@ -307,6 +320,7 @@ function App() {
     setAccessToken('')
     setOwner('')
     setRepoName('')
+    setGitlabProjectName('')
     setIsDragging(false)
   }
 
@@ -326,14 +340,14 @@ function App() {
       const response = await fetch(`${config.apiBaseUrl}/analyze/${jobId.trim()}`)
 
       if (!response.ok) {
-        throw new Error(`분석 요청 실패: ${response.status}`)
+        throw new Error(`Analysis request failed: ${response.status}`)
       }
 
       const data = await response.json()
       setAnalyzeResult(data)
     } catch (error) {
       console.error('Analyze error:', error)
-      setAnalyzeError(error.message || '분석 중 오류가 발생했습니다.')
+      setAnalyzeError(error.message || 'An error occurred during analysis.')
     } finally {
       setIsAnalyzing(false)
     }
@@ -379,7 +393,7 @@ function App() {
               <span className="user-name">{username}</span>
             </div>
             <button className="logout-btn" onClick={() => setIsLoggedIn(false)}>
-              로그아웃
+              Logout
             </button>
           </div>
         </aside>
@@ -402,11 +416,11 @@ function App() {
             {activeMenu === 'project' && (
               <div className="project-list">
                 {isFetchingProjects ? (
-                  <p className="empty-message">프로젝트 목록을 불러오는 중입니다...</p>
+                  <p className="empty-message">Loading projects...</p>
                 ) : projectsError ? (
                   <p className="empty-message">{projectsError}</p>
                 ) : projects.length === 0 ? (
-                  <p className="empty-message">프로젝트가 없습니다. Add 버튼을 눌러 추가하세요.</p>
+                  <p className="empty-message">No projects found. Click the Add button to add one.</p>
                 ) : (
                   projects.map(project => (
                     <div key={project.id} className="project-card">
@@ -433,11 +447,11 @@ function App() {
             {activeMenu === 'issues' && (
               <>
                 {isFetchingProjects ? (
-                  <p className="empty-message">프로젝트 목록을 불러오는 중입니다...</p>
+                  <p className="empty-message">Loading projects...</p>
                 ) : projectsError ? (
                   <p className="empty-message">{projectsError}</p>
                 ) : projects.length === 0 ? (
-                  <p className="empty-message">등록된 프로젝트가 없어 이슈를 표시할 수 없습니다.</p>
+                  <p className="empty-message">No registered projects to display issues.</p>
                 ) : (
                   <div className="issues-screen">
                     <div className="issues-toolbar">
@@ -488,14 +502,14 @@ function App() {
                 <div className="analyze-popup">
                   <div className="analyze-popup-header">
                     <span className="analyze-icon">🔍</span>
-                    <h2>Job ID 입력</h2>
+                    <h2>Enter Job ID</h2>
                   </div>
                   <div className="analyze-popup-body">
-                    <p className="analyze-description">분석할 작업의 Job ID를 입력해주세요.</p>
+                    <p className="analyze-description">Please enter the Job ID for analysis.</p>
                     <input
                       type="text"
                       className="analyze-input"
-                      placeholder="Job ID를 입력하세요"
+                      placeholder="Enter Job ID"
                       value={jobId}
                       onChange={e => setJobId(e.target.value)}
                       disabled={isAnalyzing}
@@ -513,7 +527,7 @@ function App() {
                         </div>
                         {analyzeResult.data.finished_at && (
                           <p className="analyze-time">
-                            완료: {new Date(analyzeResult.data.finished_at).toLocaleString()}
+                            Completed: {new Date(analyzeResult.data.finished_at).toLocaleString()}
                           </p>
                         )}
                         {analyzeResult.data.result_content && (
@@ -533,7 +547,7 @@ function App() {
                       disabled={!jobId.trim() || isAnalyzing}
                       onClick={handleAnalyze}
                     >
-                      {isAnalyzing ? '분석 중...' : '분석 시작'}
+                      {isAnalyzing ? 'Analyzing...' : 'Start Analysis'}
                     </button>
                   </div>
                 </div>
@@ -547,18 +561,18 @@ function App() {
           <div className="modal-overlay" onClick={handleCloseModal}>
             <div className="modal" onClick={e => e.stopPropagation()}>
               <div className="modal-header">
-                <h2>프로젝트 추가</h2>
+                <h2>Add Project</h2>
                 <button className="modal-close" onClick={handleCloseModal}>×</button>
               </div>
               <div className="modal-body">
                 <div className="form-field">
-                  <label>SourceCode</label>
+                  <label>Source Code</label>
                   <select
                     value={sourceCode}
                     onChange={e => handleSourceCodeChange(e.target.value)}
                     className="form-select"
                   >
-                    <option value="">선택하세요</option>
+                    <option value="">Select</option>
                     <option value="github">GitHub</option>
                     <option value="gitlab">GitLab</option>
                   </select>
@@ -589,8 +603,8 @@ function App() {
                           ) : (
                             <>
                               <span className="upload-icon">📁</span>
-                              <span className="upload-text">파일을 드래그하거나 클릭하여 선택</span>
-                              <span className="upload-hint">.pem 파일만 가능</span>
+                              <span className="upload-text">Drag and drop or click to select</span>
+                              <span className="upload-hint">.pem files only</span>
                             </>
                           )}
                         </label>
@@ -603,7 +617,7 @@ function App() {
                         type="text"
                         value={appId}
                         onChange={e => setAppId(e.target.value)}
-                        placeholder="App ID를 입력하세요"
+                        placeholder="Enter App ID"
                         className="form-input"
                       />
                     </div>
@@ -614,7 +628,7 @@ function App() {
                         type="text"
                         value={installId}
                         onChange={e => setInstallId(e.target.value)}
-                        placeholder="Install ID를 입력하세요"
+                        placeholder="Enter Install ID"
                         className="form-input"
                       />
                     </div>
@@ -622,19 +636,32 @@ function App() {
                 )}
 
                 {sourceCode === 'gitlab' && (
-                  <div className="form-field">
-                    <label>Access Token</label>
-                    <input
-                      type="password"
-                      value={accessToken}
-                      onChange={e => setAccessToken(e.target.value)}
-                      placeholder="GitLab PAT를 입력하세요"
-                      className="form-input"
-                    />
-                  </div>
+                  <>
+                    <div className="form-field">
+                      <label>Project Name</label>
+                      <input
+                        type="text"
+                        value={gitlabProjectName}
+                        onChange={e => setGitlabProjectName(e.target.value)}
+                        placeholder="Project name (e.g., my-group/my-project)"
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Access Token</label>
+                      <input
+                        type="password"
+                        value={accessToken}
+                        onChange={e => setAccessToken(e.target.value)}
+                        placeholder="Enter GitLab Personal Access Token"
+                        className="form-input"
+                      />
+                    </div>
+                  </>
                 )}
 
-                {sourceCode && (
+                {sourceCode === 'github' && (
                   <>
                     <div className="form-field">
                       <label>Owner</label>
@@ -642,7 +669,7 @@ function App() {
                         type="text"
                         value={owner}
                         onChange={e => setOwner(e.target.value)}
-                        placeholder={sourceCode === 'gitlab' ? 'GitLab 그룹/사용자명 (예: my-group)' : 'GitHub 소유자명 (예: octocat)'}
+                        placeholder="GitHub owner (e.g., octocat)"
                         className="form-input"
                       />
                     </div>
@@ -653,7 +680,7 @@ function App() {
                         type="text"
                         value={repoName}
                         onChange={e => setRepoName(e.target.value)}
-                        placeholder={sourceCode === 'gitlab' ? '프로젝트 이름 (예: my-project)' : '레포지토리 이름 (예: my-repo)'}
+                        placeholder="Repository name (e.g., my-repo)"
                         className="form-input"
                       />
                     </div>
@@ -662,14 +689,14 @@ function App() {
               </div>
               <div className="modal-footer">
                 <button className="btn-cancel" onClick={handleCloseModal} disabled={isLoading}>
-                  취소
+                  Cancel
                 </button>
                 <button
                   className={`btn-register ${isLoading ? 'loading' : ''}`}
                   onClick={handleAddProject}
                   disabled={!isProjectFormValid || isLoading}
                 >
-                  {isLoading ? '등록 중...' : '등록'}
+                  {isLoading ? 'Registering...' : 'Register'}
                 </button>
               </div>
             </div>
@@ -839,20 +866,20 @@ function App() {
           </div>
         </div>
 
-        <section className="login-panel" aria-label="로그인 패널">
+        <section className="login-panel" aria-label="Login Panel">
           <form className="login-form" onSubmit={handleSubmit}>
             <label className="field">
-              <span>아이디</span>
+              <span>Username</span>
               <input type="text" name="username" placeholder="dark-lord" autoComplete="username" />
             </label>
 
             <label className="field">
-              <span>비밀번호</span>
+              <span>Password</span>
               <input type="password" name="password" placeholder="••••••••" autoComplete="current-password" />
             </label>
 
             <button type="submit" className="login-button">
-              로그인
+              Login
             </button>
           </form>
         </section>
