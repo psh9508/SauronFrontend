@@ -27,22 +27,28 @@ const formatAuthTypeLabel = (authType) => {
 
 const normalizeProject = (project) => {
   const sourceCode = project.provider ?? project.sourceCode ?? 'github'
-  const authConfig = project.auth_config ?? project.authConfig ?? {}
+  // Handle nested repo_info structure (new API) or flat structure (legacy)
+  const repoInfo = project.repo_info ?? {}
+  const authConfig = repoInfo.auth_config ?? project.auth_config ?? project.authConfig ?? {}
   const authType = authConfig.type ?? (sourceCode === 'gitlab' ? 'gitlab_pat' : 'github_app')
   const projectName = project.project_name ?? project.projectName ?? ''
 
+  // Get owner and repo_name from nested repo_info or flat structure
+  const owner = repoInfo.owner ?? project.owner ?? projectName ?? '-'
+  const repoName = repoInfo.repo_name ?? project.repo_name ?? project.repoName ?? projectName ?? '-'
+
   return {
-    id: project.project_id ?? project.id ?? `${project.owner ?? projectName}-${project.repo_name ?? project.repoName ?? Date.now()}`,
+    id: project.id ?? project.project_id ?? `${owner}-${repoName}-${Date.now()}`,
     sourceCode,
-    owner: project.owner ?? projectName ?? '-',
-    repoName: project.repo_name ?? project.repoName ?? projectName ?? '-',
+    owner,
+    repoName,
     projectName,
     pemFileName: project.pem_file_name ?? project.pemFileName ?? '',
     authType,
     appId: authConfig.app_id ?? project.app_id ?? project.appId ?? '-',
     installId: authConfig.installation_id ?? project.installation_id ?? project.installId ?? '-',
     isActive: project.is_active ?? project.isActive ?? true,
-    createdAt: formatProjectDate(project.created_at ?? project.createdAt),
+    createdAt: formatProjectDate(project.created_at ?? project.createdAt ?? project.updated_at ?? project.updatedAt),
   }
 }
 
@@ -51,6 +57,14 @@ const extractConnection = (payload) => payload?.data ?? payload?.connection ?? p
 const extractProjects = (payload) => {
   if (Array.isArray(payload)) {
     return payload
+  }
+
+  if (Array.isArray(payload?.data?.repositories)) {
+    return payload.data.repositories
+  }
+
+  if (Array.isArray(payload?.repositories)) {
+    return payload.repositories
   }
 
   if (Array.isArray(payload?.data?.connections)) {
@@ -181,7 +195,7 @@ function App() {
     setProjectsError('')
 
     try {
-      const response = await fetch(`${config.apiBaseUrl}/source_control/connections`)
+      const response = await fetch(`${config.apiBaseUrl}/source_control/repositories`)
 
       if (!response.ok) {
         throw new Error(`Failed to load projects: ${response.status}`)
@@ -191,7 +205,7 @@ function App() {
       setProjects(extractProjects(data).map(normalizeProject))
     } catch (error) {
       console.error('Failed to load projects:', error)
-      setProjectsError('Failed to load projects. Server requires GET /source_control/connections API.')
+      setProjectsError('Failed to load projects. Server requires GET /source_control/repositories API.')
     } finally {
       setIsFetchingProjects(false)
     }
@@ -236,6 +250,8 @@ function App() {
     setIsLoading(true)
     try {
       let authConfig
+      let repoOwner
+      let repoName
 
       if (sourceCode === 'github') {
         const pemContent = await pemFile.text()
@@ -245,29 +261,34 @@ function App() {
           installation_id: installIdValue,
           pem: pemContent,
         }
+        repoOwner = ownerValue
+        repoName = repoNameValue
       } else {
         authConfig = {
           type: 'gitlab_pat',
           access_token: accessTokenValue,
         }
+        // Parse GitLab project name (format: "group/project")
+        const parts = gitlabProjectNameValue.split('/')
+        if (parts.length >= 2) {
+          repoOwner = parts.slice(0, -1).join('/')
+          repoName = parts[parts.length - 1]
+        } else {
+          repoOwner = gitlabProjectNameValue
+          repoName = gitlabProjectNameValue
+        }
       }
 
-      const requestBody = sourceCode === 'github'
-        ? {
-            project_id: 0,
-            provider: sourceCode,
-            owner: ownerValue,
-            repo_name: repoNameValue,
-            auth_config: authConfig,
-          }
-        : {
-            project_id: 0,
-            provider: sourceCode,
-            project_name: gitlabProjectNameValue,
-            auth_config: authConfig,
-          }
+      const requestBody = {
+        provider: sourceCode,
+        repo_info: {
+          owner: repoOwner,
+          repo_name: repoName,
+          auth_config: authConfig,
+        },
+      }
 
-      const response = await fetch(`${config.apiBaseUrl}/source_control/connections`, {
+      const response = await fetch(`${config.apiBaseUrl}/source_control/repositories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -280,17 +301,14 @@ function App() {
       }
 
       const data = await response.json()
-      const createdConnection = extractConnection(data)
-      const newProject = normalizeProject({
-        ...createdConnection,
-        provider: sourceCode,
-        owner: sourceCode === 'github' ? ownerValue : gitlabProjectNameValue,
-        repo_name: sourceCode === 'github' ? repoNameValue : gitlabProjectNameValue,
-        project_name: sourceCode === 'gitlab' ? gitlabProjectNameValue : undefined,
-        pem_file_name: sourceCode === 'github' ? pemFile?.name ?? '' : '',
+      const createdRepository = extractConnection(data)
+      // Build fallback repo_info from local values if not in response
+      const fallbackRepoInfo = {
+        owner: repoOwner,
+        repo_name: repoName,
         auth_config: {
-          ...createdConnection?.auth_config,
-          type: createdConnection?.auth_config?.type ?? authConfig.type,
+          ...createdRepository?.repo_info?.auth_config,
+          type: createdRepository?.repo_info?.auth_config?.type ?? authConfig.type,
           ...(sourceCode === 'github'
             ? {
                 app_id: appIdValue,
@@ -298,7 +316,17 @@ function App() {
               }
             : {}),
         },
-        created_at: createdConnection?.created_at ?? new Date().toISOString(),
+      }
+      const newProject = normalizeProject({
+        ...createdRepository,
+        provider: sourceCode,
+        repo_info: {
+          ...fallbackRepoInfo,
+          ...createdRepository?.repo_info,
+          auth_config: fallbackRepoInfo.auth_config,
+        },
+        pem_file_name: sourceCode === 'github' ? pemFile?.name ?? '' : '',
+        created_at: createdRepository?.created_at ?? new Date().toISOString(),
       })
 
       setProjects(prevProjects => [...prevProjects, newProject])
