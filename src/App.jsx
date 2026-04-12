@@ -36,6 +36,10 @@ const normalizeProject = (project) => {
   // Get owner and repo_name from nested repo_info or flat structure
   const owner = repoInfo.owner ?? project.owner ?? projectName ?? '-'
   const repoName = repoInfo.repo_name ?? project.repo_name ?? project.repoName ?? projectName ?? '-'
+  // Get base_url for GitLab (defaults to https://gitlab.com)
+  const baseUrl = repoInfo.base_url ?? project.base_url ?? (sourceCode === 'gitlab' ? 'https://gitlab.com' : '')
+  // Get repository_name for GitLab
+  const repositoryName = repoInfo.repository_name ?? project.repository_name ?? ''
 
   return {
     id: project.id ?? project.project_id ?? `${owner}-${repoName}-${Date.now()}`,
@@ -43,6 +47,8 @@ const normalizeProject = (project) => {
     owner,
     repoName,
     projectName,
+    baseUrl,
+    repositoryName,
     pemFileName: project.pem_file_name ?? project.pemFileName ?? '',
     authType,
     appId: authConfig.app_id ?? project.app_id ?? project.appId ?? '-',
@@ -132,7 +138,7 @@ function App() {
   const [projectsError, setProjectsError] = useState('')
 
   // 프로젝트 추가 폼 상태
-  const [sourceCode, setSourceCode] = useState('')
+  const [sourceCode, setSourceCode] = useState('github')
   const [pemFile, setPemFile] = useState(null)
   const [appId, setAppId] = useState('')
   const [installId, setInstallId] = useState('')
@@ -140,6 +146,7 @@ function App() {
   const [owner, setOwner] = useState('')
   const [repoName, setRepoName] = useState('')
   const [gitlabProjectName, setGitlabProjectName] = useState('')
+  const [gitlabBaseUrl, setGitlabBaseUrl] = useState('https://gitlab.com')
   const [isDragging, setIsDragging] = useState(false)
 
   // Analyze 상태
@@ -180,6 +187,7 @@ function App() {
     setInstallId('')
     setAccessToken('')
     setGitlabProjectName('')
+    setGitlabBaseUrl('https://gitlab.com')
     setIsDragging(false)
   }
 
@@ -256,7 +264,6 @@ function App() {
       if (sourceCode === 'github') {
         const pemContent = await pemFile.text()
         authConfig = {
-          type: 'github_app',
           app_id: appIdValue,
           installation_id: installIdValue,
           pem: pemContent,
@@ -265,25 +272,18 @@ function App() {
         repoName = repoNameValue
       } else {
         authConfig = {
-          type: 'gitlab_pat',
           access_token: accessTokenValue,
-        }
-        // Parse GitLab project name (format: "group/project")
-        const parts = gitlabProjectNameValue.split('/')
-        if (parts.length >= 2) {
-          repoOwner = parts.slice(0, -1).join('/')
-          repoName = parts[parts.length - 1]
-        } else {
-          repoOwner = gitlabProjectNameValue
-          repoName = gitlabProjectNameValue
         }
       }
 
       const requestBody = {
         provider: sourceCode,
         repo_info: {
-          owner: repoOwner,
-          repo_name: repoName,
+          ...(sourceCode === 'github' && { owner: repoOwner, repo_name: repoName }),
+          ...(sourceCode === 'gitlab' && {
+            base_url: gitlabBaseUrl.trim() || 'https://gitlab.com',
+            repository_name: gitlabProjectNameValue,
+          }),
           auth_config: authConfig,
         },
       }
@@ -304,11 +304,13 @@ function App() {
       const createdRepository = extractConnection(data)
       // Build fallback repo_info from local values if not in response
       const fallbackRepoInfo = {
-        owner: repoOwner,
-        repo_name: repoName,
+        ...(sourceCode === 'github' && { owner: repoOwner, repo_name: repoName }),
+        ...(sourceCode === 'gitlab' && {
+          base_url: gitlabBaseUrl.trim() || 'https://gitlab.com',
+          repository_name: gitlabProjectNameValue,
+        }),
         auth_config: {
           ...createdRepository?.repo_info?.auth_config,
-          type: createdRepository?.repo_info?.auth_config?.type ?? authConfig.type,
           ...(sourceCode === 'github'
             ? {
                 app_id: appIdValue,
@@ -341,7 +343,7 @@ function App() {
   }
 
   const resetForm = () => {
-    setSourceCode('')
+    setSourceCode('github')
     setPemFile(null)
     setAppId('')
     setInstallId('')
@@ -349,6 +351,7 @@ function App() {
     setOwner('')
     setRepoName('')
     setGitlabProjectName('')
+    setGitlabBaseUrl('https://gitlab.com')
     setIsDragging(false)
   }
 
@@ -460,7 +463,15 @@ function App() {
                         {project.authType === 'github_app' ? (
                           <p className="project-detail">App ID: {project.appId} | Install ID: {project.installId}</p>
                         ) : (
-                          <p className="project-detail">Token credentials are stored server-side.</p>
+                          <>
+                            {project.repositoryName && (
+                              <p className="project-detail">Repository: {project.repositoryName}</p>
+                            )}
+                            {project.baseUrl && (
+                              <p className="project-detail">Base URL: {project.baseUrl}</p>
+                            )}
+                            <p className="project-detail">Token credentials are stored server-side.</p>
+                          </>
                         )}
                         {project.pemFileName && (
                           <p className="project-detail">PEM File: {project.pemFileName}</p>
@@ -600,7 +611,6 @@ function App() {
                     onChange={e => handleSourceCodeChange(e.target.value)}
                     className="form-select"
                   >
-                    <option value="">Select</option>
                     <option value="github">GitHub</option>
                     <option value="gitlab">GitLab</option>
                   </select>
@@ -666,12 +676,23 @@ function App() {
                 {sourceCode === 'gitlab' && (
                   <>
                     <div className="form-field">
-                      <label>Project Name</label>
+                      <label>Base URL</label>
+                      <input
+                        type="text"
+                        value={gitlabBaseUrl}
+                        onChange={e => setGitlabBaseUrl(e.target.value)}
+                        placeholder="https://gitlab.com"
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="form-field">
+                      <label>Gitlab Repository Name</label>
                       <input
                         type="text"
                         value={gitlabProjectName}
                         onChange={e => setGitlabProjectName(e.target.value)}
-                        placeholder="Project name (e.g., my-group/my-project)"
+                        placeholder="e.g., my-group/my-project"
                         className="form-input"
                       />
                     </div>
