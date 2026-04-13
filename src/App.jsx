@@ -33,13 +33,22 @@ const normalizeProject = (project) => {
   const authType = authConfig.type ?? (sourceCode === 'gitlab' ? 'gitlab_pat' : 'github_app')
   const projectName = project.project_name ?? project.projectName ?? ''
 
-  // Get owner and repo_name from nested repo_info or flat structure
-  const owner = repoInfo.owner ?? project.owner ?? projectName ?? '-'
-  const repoName = repoInfo.repo_name ?? project.repo_name ?? project.repoName ?? projectName ?? '-'
-  // Get base_url for GitLab (defaults to https://gitlab.com)
-  const baseUrl = repoInfo.base_url ?? project.base_url ?? (sourceCode === 'gitlab' ? 'https://gitlab.com' : '')
-  // Get repository_name for GitLab
+  // Get repository_name from repo_info (new API: "owner/repo" format for GitHub)
   const repositoryName = repoInfo.repository_name ?? project.repository_name ?? ''
+  // Parse owner and repoName from repository_name or fallback to legacy fields
+  let owner = '-'
+  let repoName = '-'
+  if (repositoryName && repositoryName.includes('/')) {
+    const parts = repositoryName.split('/')
+    owner = parts[0] ?? '-'
+    repoName = parts.slice(1).join('/') ?? '-'
+  } else {
+    // Fallback to legacy flat structure
+    owner = repoInfo.owner ?? project.owner ?? projectName ?? '-'
+    repoName = repoInfo.repo_name ?? project.repo_name ?? project.repoName ?? projectName ?? '-'
+  }
+  // Get base_url for GitLab from repo_info (defaults to https://gitlab.com)
+  const baseUrl = repoInfo.base_url ?? project.base_url ?? (sourceCode === 'gitlab' ? 'https://gitlab.com' : '')
 
   return {
     id: project.id ?? project.project_id ?? `${owner}-${repoName}-${Date.now()}`,
@@ -143,9 +152,7 @@ function App() {
   const [appId, setAppId] = useState('')
   const [installId, setInstallId] = useState('')
   const [accessToken, setAccessToken] = useState('')
-  const [owner, setOwner] = useState('')
-  const [repoName, setRepoName] = useState('')
-  const [gitlabProjectName, setGitlabProjectName] = useState('')
+  const [githubRepoName, setGithubRepoName] = useState('')
   const [gitlabBaseUrl, setGitlabBaseUrl] = useState('https://gitlab.com')
   const [isDragging, setIsDragging] = useState(false)
 
@@ -186,7 +193,7 @@ function App() {
     setAppId('')
     setInstallId('')
     setAccessToken('')
-    setGitlabProjectName('')
+    setGithubRepoName('')
     setGitlabBaseUrl('https://gitlab.com')
     setIsDragging(false)
   }
@@ -240,14 +247,13 @@ function App() {
     }
   }, [projects, selectedIssueProjectId])
 
-  const ownerValue = owner.trim()
-  const repoNameValue = repoName.trim()
+  const githubRepoNameValue = githubRepoName.trim()
   const appIdValue = appId.trim()
   const installIdValue = installId.trim()
   const accessTokenValue = accessToken.trim()
-  const gitlabProjectNameValue = gitlabProjectName.trim()
-  const isGithubFormValid = Boolean(sourceCode === 'github' && pemFile && appIdValue && installIdValue && ownerValue && repoNameValue)
-  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && gitlabProjectNameValue)
+  const gitlabBaseUrlValue = gitlabBaseUrl.trim()
+  const isGithubFormValid = Boolean(sourceCode === 'github' && pemFile && appIdValue && installIdValue && githubRepoNameValue && githubRepoNameValue.includes('/'))
+  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && gitlabBaseUrlValue)
   const isProjectFormValid = isGithubFormValid || isGitlabFormValid
 
   const handleAddProject = async () => {
@@ -258,8 +264,6 @@ function App() {
     setIsLoading(true)
     try {
       let authConfig
-      let repoOwner
-      let repoName
 
       if (sourceCode === 'github') {
         const pemContent = await pemFile.text()
@@ -268,8 +272,6 @@ function App() {
           installation_id: installIdValue,
           pem: pemContent,
         }
-        repoOwner = ownerValue
-        repoName = repoNameValue
       } else {
         authConfig = {
           access_token: accessTokenValue,
@@ -279,14 +281,15 @@ function App() {
       const requestBody = {
         provider: sourceCode,
         repo_info: {
-          ...(sourceCode === 'github' && { owner: repoOwner, repo_name: repoName }),
+          ...(sourceCode === 'github' && { repository_name: githubRepoNameValue }),
           ...(sourceCode === 'gitlab' && {
-            base_url: gitlabBaseUrl.trim() || 'https://gitlab.com',
-            repository_name: gitlabProjectNameValue,
+            base_url: gitlabBaseUrlValue || 'https://gitlab.com',
           }),
           auth_config: authConfig,
         },
       }
+
+      console.log('[Add Project] Request:', JSON.stringify(requestBody, null, 2))
 
       const response = await fetch(`${config.apiBaseUrl}/source_control/repositories`, {
         method: 'POST',
@@ -301,22 +304,20 @@ function App() {
       }
 
       const data = await response.json()
+      console.log('[Add Project] Response:', JSON.stringify(data, null, 2))
       const createdRepository = extractConnection(data)
       // Build fallback repo_info from local values if not in response
       const fallbackRepoInfo = {
-        ...(sourceCode === 'github' && { owner: repoOwner, repo_name: repoName }),
+        ...(sourceCode === 'github' && { repository_name: githubRepoNameValue }),
         ...(sourceCode === 'gitlab' && {
-          base_url: gitlabBaseUrl.trim() || 'https://gitlab.com',
-          repository_name: gitlabProjectNameValue,
+          base_url: gitlabBaseUrlValue || 'https://gitlab.com',
         }),
         auth_config: {
           ...createdRepository?.repo_info?.auth_config,
-          ...(sourceCode === 'github'
-            ? {
-                app_id: appIdValue,
-                installation_id: installIdValue,
-              }
-            : {}),
+          ...(sourceCode === 'github' && {
+            app_id: appIdValue,
+            installation_id: installIdValue,
+          }),
         },
       }
       const newProject = normalizeProject({
@@ -348,9 +349,7 @@ function App() {
     setAppId('')
     setInstallId('')
     setAccessToken('')
-    setOwner('')
-    setRepoName('')
-    setGitlabProjectName('')
+    setGithubRepoName('')
     setGitlabBaseUrl('https://gitlab.com')
     setIsDragging(false)
   }
@@ -464,9 +463,6 @@ function App() {
                           <p className="project-detail">App ID: {project.appId} | Install ID: {project.installId}</p>
                         ) : (
                           <>
-                            {project.repositoryName && (
-                              <p className="project-detail">Repository: {project.repositoryName}</p>
-                            )}
                             {project.baseUrl && (
                               <p className="project-detail">Base URL: {project.baseUrl}</p>
                             )}
@@ -687,17 +683,6 @@ function App() {
                     </div>
 
                     <div className="form-field">
-                      <label>Gitlab Repository Name</label>
-                      <input
-                        type="text"
-                        value={gitlabProjectName}
-                        onChange={e => setGitlabProjectName(e.target.value)}
-                        placeholder="e.g., my-group/my-project"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-field">
                       <label>Access Token</label>
                       <input
                         type="password"
@@ -711,29 +696,16 @@ function App() {
                 )}
 
                 {sourceCode === 'github' && (
-                  <>
-                    <div className="form-field">
-                      <label>Owner</label>
-                      <input
-                        type="text"
-                        value={owner}
-                        onChange={e => setOwner(e.target.value)}
-                        placeholder="GitHub owner (e.g., octocat)"
-                        className="form-input"
-                      />
-                    </div>
-
-                    <div className="form-field">
-                      <label>Repository Name</label>
-                      <input
-                        type="text"
-                        value={repoName}
-                        onChange={e => setRepoName(e.target.value)}
-                        placeholder="Repository name (e.g., my-repo)"
-                        className="form-input"
-                      />
-                    </div>
-                  </>
+                  <div className="form-field">
+                    <label>Repository</label>
+                    <input
+                      type="text"
+                      value={githubRepoName}
+                      onChange={e => setGithubRepoName(e.target.value)}
+                      placeholder="owner/repo (e.g., facebook/react)"
+                      className="form-input"
+                    />
+                  </div>
                 )}
               </div>
               <div className="modal-footer">
