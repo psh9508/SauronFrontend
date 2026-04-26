@@ -101,39 +101,6 @@ const extractProjects = (payload) => {
   return []
 }
 
-const buildProjectIssues = (project) => {
-  if (!project) {
-    return []
-  }
-
-  const authIssueDescription = project.authType === 'gitlab_pat'
-    ? 'Please verify GitLab Personal Access Token scope and expiration policy.'
-    : `Please verify GitHub App ID ${project.appId} and Install ID ${project.installId} mapping.`
-
-  return [
-    {
-      id: `${project.id}-issue-1`,
-      status: 'Open',
-      priority: 'High',
-      title: `${project.repoName} Authentication Flow Exception Handling`,
-      description: `Need to organize response messages and status codes for login failures in ${project.owner}/${project.repoName}.`,
-    },
-    {
-      id: `${project.id}-issue-2`,
-      status: 'In Review',
-      priority: 'Medium',
-      title: `${project.repoName} Pre-deployment Environment Variables Check`,
-      description: authIssueDescription,
-    },
-    {
-      id: `${project.id}-issue-3`,
-      status: 'Planned',
-      priority: 'Low',
-      title: `${project.repoName} Operations Log Visibility Improvement`,
-      description: `Add issue tracking logs and dashboard connection points based on Project ID ${project.id}.`,
-    },
-  ]
-}
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -141,7 +108,6 @@ function App() {
   const [activeMenu, setActiveMenu] = useState('project')
   const [showModal, setShowModal] = useState(false)
   const [projects, setProjects] = useState([])
-  const [selectedIssueProjectId, setSelectedIssueProjectId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isFetchingProjects, setIsFetchingProjects] = useState(false)
   const [projectsError, setProjectsError] = useState('')
@@ -161,6 +127,16 @@ function App() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analyzeResult, setAnalyzeResult] = useState(null)
   const [analyzeError, setAnalyzeError] = useState('')
+
+  // Errors 상태
+  const [errorEvents, setErrorEvents] = useState([])
+  const [isFetchingErrors, setIsFetchingErrors] = useState(false)
+  const [errorsError, setErrorsError] = useState('')
+  const [selectedError, setSelectedError] = useState(null)
+  const [showLibFrames, setShowLibFrames] = useState(false)
+  const [selectedBucket, setSelectedBucket] = useState(null)
+  const [stacktraceOpen, setStacktraceOpen] = useState(true)
+  const [breadcrumbsOpen, setBreadcrumbsOpen] = useState(true)
 
   // 드래그 앤 드롭 핸들러
   const handleDragOver = (e) => {
@@ -235,17 +211,12 @@ function App() {
   }, [isLoggedIn])
 
   useEffect(() => {
-    if (projects.length === 0) {
-      setSelectedIssueProjectId('')
-      return
+    if (isLoggedIn && activeMenu === 'issues') {
+      loadErrorEvents()
     }
+  }, [isLoggedIn, activeMenu])
 
-    const hasSelectedProject = projects.some(project => String(project.id) === selectedIssueProjectId)
 
-    if (!hasSelectedProject) {
-      setSelectedIssueProjectId(String(projects[0].id))
-    }
-  }, [projects, selectedIssueProjectId])
 
   const githubRepoNameValue = githubRepoName.trim()
   const appIdValue = appId.trim()
@@ -359,6 +330,27 @@ function App() {
     resetForm()
   }
 
+  const loadErrorEvents = async () => {
+    setIsFetchingErrors(true)
+    setErrorsError('')
+
+    try {
+      const response = await fetch(`${config.apiBaseUrl}/analyze/errors`)
+
+      if (!response.ok) {
+        throw new Error(`Failed to load errors: ${response.status}`)
+      }
+
+      const data = await response.json()
+      setErrorEvents(data?.data?.errors ?? [])
+    } catch (error) {
+      console.error('Failed to load errors:', error)
+      setErrorsError('Failed to load error events.')
+    } finally {
+      setIsFetchingErrors(false)
+    }
+  }
+
   const handleAnalyze = async () => {
     if (!jobId.trim()) return
 
@@ -383,9 +375,6 @@ function App() {
     }
   }
 
-  const selectedIssueProject = projects.find(project => String(project.id) === selectedIssueProjectId) ?? null
-  const selectedProjectIssues = buildProjectIssues(selectedIssueProject)
-
   if (isLoggedIn) {
     return (
       <div className="dashboard">
@@ -405,7 +394,7 @@ function App() {
             </button>
             <button
               className={`nav-item ${activeMenu === 'issues' ? 'active' : ''}`}
-              onClick={() => setActiveMenu('issues')}
+              onClick={() => { setActiveMenu('issues'); setSelectedError(null) }}
             >
               <span className="nav-icon">🐛</span>
               <span className="nav-label">Issues</span>
@@ -431,11 +420,20 @@ function App() {
         {/* 메인 컨텐츠 */}
         <main className="main-content">
           <header className="content-header">
-            <h1 className="page-title">
-              {activeMenu === 'project' && 'Project'}
-              {activeMenu === 'issues' && 'Issues'}
-              {activeMenu === 'analyze' && 'Analyze'}
-            </h1>
+            {activeMenu === 'issues' && selectedError ? (
+              <h1 className="page-title page-title-breadcrumb">
+                <button className="back-btn" onClick={() => setSelectedError(null)}>&lsaquo;</button>
+                <span className="breadcrumb-link" onClick={() => setSelectedError(null)}>Issues</span>
+                <span className="breadcrumb-sep">/</span>
+                <span className="breadcrumb-current">{selectedError.id}</span>
+              </h1>
+            ) : (
+              <h1 className="page-title">
+                {activeMenu === 'project' && 'Project'}
+                {activeMenu === 'issues' && 'Issues'}
+                {activeMenu === 'analyze' && 'Analyze'}
+              </h1>
+            )}
             {activeMenu === 'project' && (
               <button className="add-button" onClick={() => setShowModal(true)}>
                 + Add
@@ -479,58 +477,221 @@ function App() {
                 )}
               </div>
             )}
-            {activeMenu === 'issues' && (
-              <>
-                {isFetchingProjects ? (
-                  <p className="empty-message">Loading projects...</p>
-                ) : projectsError ? (
-                  <p className="empty-message">{projectsError}</p>
-                ) : projects.length === 0 ? (
-                  <p className="empty-message">No registered projects to display issues.</p>
+            {activeMenu === 'issues' && !selectedError && (
+              <div className="errors-screen">
+                {isFetchingErrors ? (
+                  <p className="empty-message">Loading errors...</p>
+                ) : errorsError ? (
+                  <p className="empty-message">{errorsError}</p>
+                ) : errorEvents.length === 0 ? (
+                  <p className="empty-message">No error events found.</p>
                 ) : (
-                  <div className="issues-screen">
-                    <div className="issues-toolbar">
-                      <div className="issues-select-group">
-                        <label htmlFor="project-issues-select" className="issues-select-label">Project</label>
-                        <select
-                          id="project-issues-select"
-                          className="issues-select"
-                          value={selectedIssueProjectId}
-                          onChange={e => setSelectedIssueProjectId(e.target.value)}
-                        >
-                          {projects.map(project => (
-                            <option key={project.id} value={String(project.id)}>
-                              {project.owner}/{project.repoName}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      {selectedIssueProject && (
-                        <div className="issues-selected-meta">
-                          <span className="issues-selected-title">{selectedIssueProject.owner}/{selectedIssueProject.repoName}</span>
-                          <span className="issues-selected-subtitle">Project ID {selectedIssueProject.id}</span>
-                        </div>
-                      )}
-                    </div>
+                  <div className="errors-list-full">
+                    <table className="errors-table">
+                      <thead>
+                        <tr>
+                          <th>Error</th>
+                          <th>Count</th>
+                          <th>First Seen</th>
+                          <th>Last Seen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {errorEvents.map(errorEvent => {
+                          const req = errorEvent.request
+                          const errorType = req?.event?.type ?? 'Unknown'
+                          const errorValue = req?.event?.value ?? ''
 
-                    <div className="issues-list">
-                      {selectedProjectIssues.map(issue => (
-                        <article key={issue.id} className="issue-card">
-                          <div className="issue-card-header">
-                            <div className="issue-badges">
-                              <span className={`issue-badge status-${issue.status.toLowerCase().replace(/\s+/g, '-')}`}>{issue.status}</span>
-                              <span className="issue-badge issue-priority">{issue.priority}</span>
-                            </div>
-                            <span className="issue-id">{issue.id}</span>
-                          </div>
-                          <h3 className="issue-title">{issue.title}</h3>
-                          <p className="issue-description">{issue.description}</p>
-                        </article>
-                      ))}
-                    </div>
+                          return (
+                            <tr
+                              key={errorEvent.id}
+                              className="errors-row"
+                              onClick={() => { setSelectedError(errorEvent); setShowLibFrames(false); setSelectedBucket(null); setStacktraceOpen(true); setBreadcrumbsOpen(true) }}
+                            >
+                              <td className="errors-cell-error">
+                                <span className="error-type">{errorType}</span>
+                                <span className="error-value">{errorValue}</span>
+                              </td>
+                              <td className="errors-cell-count">
+                                <span className="error-count-badge">{errorEvent.event_count}</span>
+                              </td>
+                              <td className="errors-cell-time">
+                                {new Date(errorEvent.first_seen).toLocaleString()}
+                              </td>
+                              <td className="errors-cell-time">
+                                {new Date(errorEvent.last_seen).toLocaleString()}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 )}
-              </>
+              </div>
+            )}
+            {activeMenu === 'issues' && selectedError && (
+              <div className="errors-detail-full">
+                <div className="errors-detail-body">
+                          <div className="errors-detail-title">
+                            <span className="error-detail-type">{selectedError.request?.event?.type}</span>
+                            <span className="error-detail-value">{selectedError.request?.event?.value}</span>
+                          </div>
+                          <div className="errors-detail-meta-inline">
+                            <div className="meta-inline-item">
+                              <span className="meta-label">Events</span>
+                              <span className="meta-value">{selectedError.event_count}</span>
+                            </div>
+                            <div className="meta-inline-sep" />
+                            <div className="meta-inline-item">
+                              <span className="meta-label">First Seen</span>
+                              <span className="meta-value">{new Date(selectedError.first_seen).toLocaleString()}</span>
+                            </div>
+                            <div className="meta-inline-sep" />
+                            <div className="meta-inline-item">
+                              <span className="meta-label">Last Seen</span>
+                              <span className="meta-value">{new Date(selectedError.last_seen).toLocaleString()}</span>
+                            </div>
+                          </div>
+
+                          {(() => {
+                            const crumbs = selectedError.request?.breadcrumbs ?? []
+                            const withTime = crumbs
+                              .filter(c => c.timestamp)
+                              .map(c => ({ ...c, _ts: new Date(c.timestamp).getTime() }))
+
+                            let buckets = []
+                            let maxCount = 1
+                            let visibleCrumbs = withTime
+
+                            if (withTime.length > 0) {
+                              const minTs = Math.min(...withTime.map(c => c._ts))
+                              const maxTs = Math.max(...withTime.map(c => c._ts))
+                              const range = maxTs - minTs
+                              const bucketCount = Math.max(1, Math.min(30, Math.ceil(range / 1000)))
+                              const bucketSize = range / bucketCount || 1
+
+                              buckets = Array.from({ length: bucketCount }, (_, i) => {
+                                const start = minTs + i * bucketSize
+                                const end = start + bucketSize
+                                const items = withTime.filter(c => c._ts >= start && (i === bucketCount - 1 ? c._ts <= end : c._ts < end))
+                                return {
+                                  index: i, start, end,
+                                  total: items.length,
+                                  error: items.filter(c => c.level === 'error').length,
+                                  warning: items.filter(c => c.level === 'warning').length,
+                                  info: items.length - items.filter(c => c.level === 'error').length - items.filter(c => c.level === 'warning').length,
+                                }
+                              })
+                              maxCount = Math.max(...buckets.map(b => b.total), 1)
+
+                              if (selectedBucket !== null) {
+                                visibleCrumbs = withTime.filter(c => c._ts >= buckets[selectedBucket].start && (selectedBucket === bucketCount - 1 ? c._ts <= buckets[selectedBucket].end : c._ts < buckets[selectedBucket].end))
+                              }
+                            }
+
+                            return (
+                              <>
+                                {withTime.length > 0 && (
+                                  <div className="crumb-chart">
+                                    <div className="crumb-chart-bars">
+                                      {buckets.map(bucket => (
+                                        <div
+                                          key={bucket.index}
+                                          className={`crumb-bar-col ${selectedBucket === bucket.index ? 'selected' : ''} ${bucket.total === 0 ? 'empty' : ''}`}
+                                          onClick={() => setSelectedBucket(selectedBucket === bucket.index ? null : bucket.index)}
+                                          title={`${new Date(bucket.start).toLocaleTimeString()} — ${bucket.total} logs`}
+                                        >
+                                          <div className="crumb-bar-stack" style={{ height: `${(bucket.total / maxCount) * 100}%` }}>
+                                            {bucket.error > 0 && <div className="crumb-bar-seg seg-error" style={{ flex: bucket.error }} />}
+                                            {bucket.warning > 0 && <div className="crumb-bar-seg seg-warning" style={{ flex: bucket.warning }} />}
+                                            {bucket.info > 0 && <div className="crumb-bar-seg seg-info" style={{ flex: bucket.info }} />}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                    <div className="crumb-chart-axis">
+                                      <span>{new Date(buckets[0].start).toLocaleTimeString()}</span>
+                                      <span>{new Date(buckets[buckets.length - 1].end).toLocaleTimeString()}</span>
+                                    </div>
+                                    {selectedBucket !== null && (
+                                      <div className="crumb-chart-filter">
+                                        <span>{new Date(buckets[selectedBucket].start).toLocaleTimeString()} — {visibleCrumbs.length} logs</span>
+                                        <button onClick={() => setSelectedBucket(null)}>Clear</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                <div className="errors-detail-section">
+                                  <div className="section-header-row section-toggle" onClick={() => setStacktraceOpen(prev => !prev)}>
+                                    <h4><span className={`toggle-arrow ${stacktraceOpen ? 'open' : ''}`}>&#9656;</span> Stacktrace</h4>
+                                    <button
+                                      className="lib-toggle-btn"
+                                      onClick={e => { e.stopPropagation(); setShowLibFrames(prev => !prev) }}
+                                    >
+                                      {showLibFrames ? 'Hide' : 'Show'} library frames
+                                    </button>
+                                  </div>
+                                  {stacktraceOpen && (
+                                    <div className="stacktrace-viewer">
+                                      {(() => {
+                                        const allFrames = (selectedError.request?.event?.stacktrace ?? []).slice().reverse()
+                                        const appFrames = allFrames.filter(f => !f.filename.includes('/site-packages/') && !f.filename.includes('/lib/python'))
+                                        const libCount = allFrames.length - appFrames.length
+                                        const framesToShow = showLibFrames ? allFrames : appFrames
+                                        return (
+                                          <>
+                                            {!showLibFrames && libCount > 0 && (
+                                              <div className="lib-frames-collapsed" onClick={() => setShowLibFrames(true)}>
+                                                {libCount} library frames hidden
+                                              </div>
+                                            )}
+                                            {framesToShow.map((frame, idx) => {
+                                              const isAppCode = !frame.filename.includes('/site-packages/') && !frame.filename.includes('/lib/python')
+                                              return (
+                                                <div key={idx} className={`stacktrace-frame ${isAppCode ? 'app-code' : 'lib-code'}`}>
+                                                  <div className="frame-header">
+                                                    <span className="frame-function">{frame.function}</span>
+                                                    <span className="frame-location">{frame.filename}:{frame.lineno}</span>
+                                                  </div>
+                                                  {frame.code && (
+                                                    <pre className="frame-code">{frame.code}</pre>
+                                                  )}
+                                                </div>
+                                              )
+                                            })}
+                                          </>
+                                        )
+                                      })()}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="errors-detail-section">
+                                  <div className="section-header-row section-toggle" onClick={() => setBreadcrumbsOpen(prev => !prev)}>
+                                    <h4><span className={`toggle-arrow ${breadcrumbsOpen ? 'open' : ''}`}>&#9656;</span> Breadcrumbs</h4>
+                                  </div>
+                                  {breadcrumbsOpen && (
+                                    <div className="breadcrumbs-viewer">
+                                      {visibleCrumbs.map((crumb, idx) => (
+                                        <div key={idx} className={`breadcrumb-item level-${crumb.level ?? 'info'}`}>
+                                          <div className="breadcrumb-header">
+                                            <span className={`breadcrumb-level ${crumb.level ?? 'info'}`}>{(crumb.level ?? 'info').toUpperCase()}</span>
+                                            <span className="breadcrumb-category">{crumb.category ?? ''}</span>
+                                            <span className="breadcrumb-time">{crumb.timestamp ? new Date(crumb.timestamp).toLocaleTimeString() : ''}</span>
+                                          </div>
+                                          <p className="breadcrumb-message">{crumb.message ?? ''}</p>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </>
+                            )
+                          })()}
+                        </div>
+              </div>
             )}
             {activeMenu === 'analyze' && (
               <div className="analyze-container">
