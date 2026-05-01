@@ -26,6 +26,55 @@ npm run build
 npm run preview
 ```
 
+## 코드 품질 도구
+
+프로젝트에는 아래 도구가 설치되어 있습니다.
+
+- ESLint: JavaScript/React 코드 규칙 검사
+- Stylelint: CSS 규칙 검사
+- Prettier: 포맷 통일
+- Husky + lint-staged: 커밋 전 변경 파일만 자동 검사/수정
+
+### 자주 쓰는 명령어
+
+```bash
+npm run lint
+npm run lint:fix
+npm run stylelint
+npm run stylelint:fix
+npm run format
+npm run format:check
+npm run check
+npm run check:all
+```
+
+- `check`: 린트 + 스타일린트(기본 품질 게이트)
+- `check:all`: `check` + Prettier 검사
+
+## VS Code 추천 환경
+
+- `.vscode/extensions.json`에 권장 확장 목록이 포함되어 있습니다.
+- `.vscode/settings.json`에 저장 시 자동 포맷/자동 수정 설정이 포함되어 있습니다.
+
+## 코덱스를 프론트엔드에 더 잘 쓰는 팁
+
+- 작업 요청을 컴포넌트 단위로 쪼개기
+  - 예: "로그인 모달 접근성만 먼저 개선"처럼 범위를 작게 지정
+- 완료 조건을 명시하기
+  - 예: "키보드 탭 이동 가능, lint warning 0" 같은 측정 가능한 기준 제시
+- 디자인 제약을 함께 주기
+  - 예: "오렌지/블랙 톤 유지, 모바일 360px에서 깨지지 않게"
+- API 계약을 먼저 주기
+  - 요청/응답 JSON 예시를 먼저 제공하면 UI/상태 코드 정확도가 크게 올라감
+- 수정 전후 검증을 같이 요구하기
+  - 예: "수정 후 `npm run check` 실행 결과까지 알려줘"
+- 리팩터링은 안전 장치와 함께 요청하기
+  - 예: "기능 변경 없이 중복만 제거, 파일 분리는 최대 2개"
+- 접근성 개선은 단계적으로 요청하기
+  - 1차: 시맨틱 태그
+  - 2차: 키보드 포커스
+  - 3차: ARIA 라벨
+
 ## 주요 파일
 
 - `src/App.jsx`: 로그인 화면 구조

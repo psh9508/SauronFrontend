@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+
 import config from './config'
 
 const formatProjectDate = (value) => {
@@ -48,7 +49,8 @@ const normalizeProject = (project) => {
     repoName = repoInfo.repo_name ?? project.repo_name ?? project.repoName ?? projectName ?? '-'
   }
   // Get base_url for GitLab from repo_info (defaults to https://gitlab.com)
-  const baseUrl = repoInfo.base_url ?? project.base_url ?? (sourceCode === 'gitlab' ? 'https://gitlab.com' : '')
+  const baseUrl =
+    repoInfo.base_url ?? project.base_url ?? (sourceCode === 'gitlab' ? 'https://gitlab.com' : '')
 
   return {
     id: project.id ?? project.project_id ?? `${owner}-${repoName}-${Date.now()}`,
@@ -63,7 +65,9 @@ const normalizeProject = (project) => {
     appId: authConfig.app_id ?? project.app_id ?? project.appId ?? '-',
     installId: authConfig.installation_id ?? project.installation_id ?? project.installId ?? '-',
     isActive: project.is_active ?? project.isActive ?? true,
-    createdAt: formatProjectDate(project.created_at ?? project.createdAt ?? project.updated_at ?? project.updatedAt),
+    createdAt: formatProjectDate(
+      project.created_at ?? project.createdAt ?? project.updated_at ?? project.updatedAt
+    ),
   }
 }
 
@@ -100,7 +104,6 @@ const extractProjects = (payload) => {
 
   return []
 }
-
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -196,7 +199,9 @@ function App() {
       setProjects(extractProjects(data).map(normalizeProject))
     } catch (error) {
       console.error('Failed to load projects:', error)
-      setProjectsError('Failed to load projects. Server requires GET /source_control/repositories API.')
+      setProjectsError(
+        'Failed to load projects. Server requires GET /source_control/repositories API.'
+      )
     } finally {
       setIsFetchingProjects(false)
     }
@@ -216,15 +221,22 @@ function App() {
     }
   }, [isLoggedIn, activeMenu])
 
-
-
   const githubRepoNameValue = githubRepoName.trim()
   const appIdValue = appId.trim()
   const installIdValue = installId.trim()
   const accessTokenValue = accessToken.trim()
   const gitlabBaseUrlValue = gitlabBaseUrl.trim()
-  const isGithubFormValid = Boolean(sourceCode === 'github' && pemFile && appIdValue && installIdValue && githubRepoNameValue && githubRepoNameValue.includes('/'))
-  const isGitlabFormValid = Boolean(sourceCode === 'gitlab' && accessTokenValue && gitlabBaseUrlValue)
+  const isGithubFormValid = Boolean(
+    sourceCode === 'github' &&
+    pemFile &&
+    appIdValue &&
+    installIdValue &&
+    githubRepoNameValue &&
+    githubRepoNameValue.includes('/')
+  )
+  const isGitlabFormValid = Boolean(
+    sourceCode === 'gitlab' && accessTokenValue && gitlabBaseUrlValue
+  )
   const isProjectFormValid = isGithubFormValid || isGitlabFormValid
 
   const handleAddProject = async () => {
@@ -299,11 +311,11 @@ function App() {
           ...createdRepository?.repo_info,
           auth_config: fallbackRepoInfo.auth_config,
         },
-        pem_file_name: sourceCode === 'github' ? pemFile?.name ?? '' : '',
+        pem_file_name: sourceCode === 'github' ? (pemFile?.name ?? '') : '',
         created_at: createdRepository?.created_at ?? new Date().toISOString(),
       })
 
-      setProjects(prevProjects => [...prevProjects, newProject])
+      setProjects((prevProjects) => [...prevProjects, newProject])
       resetForm()
       setShowModal(false)
     } catch (error) {
@@ -394,7 +406,10 @@ function App() {
             </button>
             <button
               className={`nav-item ${activeMenu === 'issues' ? 'active' : ''}`}
-              onClick={() => { setActiveMenu('issues'); setSelectedError(null) }}
+              onClick={() => {
+                setActiveMenu('issues')
+                setSelectedError(null)
+              }}
             >
               <span className="nav-icon">🐛</span>
               <span className="nav-label">Issues</span>
@@ -422,8 +437,16 @@ function App() {
           <header className="content-header">
             {activeMenu === 'issues' && selectedError ? (
               <h1 className="page-title page-title-breadcrumb">
-                <button className="back-btn" onClick={() => setSelectedError(null)}>&lsaquo;</button>
-                <span className="breadcrumb-link" onClick={() => setSelectedError(null)}>Issues</span>
+                <button className="back-btn" onClick={() => setSelectedError(null)}>
+                  &lsaquo;
+                </button>
+                <button
+                  type="button"
+                  className="breadcrumb-link"
+                  onClick={() => setSelectedError(null)}
+                >
+                  Issues
+                </button>
                 <span className="breadcrumb-sep">/</span>
                 <span className="breadcrumb-current">{selectedError.id}</span>
               </h1>
@@ -448,23 +471,34 @@ function App() {
                 ) : projectsError ? (
                   <p className="empty-message">{projectsError}</p>
                 ) : projects.length === 0 ? (
-                  <p className="empty-message">No projects found. Click the Add button to add one.</p>
+                  <p className="empty-message">
+                    No projects found. Click the Add button to add one.
+                  </p>
                 ) : (
-                  projects.map(project => (
+                  projects.map((project) => (
                     <div key={project.id} className="project-card">
                       <div className="project-icon">📁</div>
                       <div className="project-info">
-                        <h3 className="project-name">{project.owner}/{project.repoName}</h3>
+                        <h3 className="project-name">
+                          {project.owner}/{project.repoName}
+                        </h3>
                         <p className="project-detail project-id">Project ID: {project.id}</p>
-                        <p className="project-detail">Provider: {formatProviderLabel(project.sourceCode)} | Auth: {formatAuthTypeLabel(project.authType)}</p>
+                        <p className="project-detail">
+                          Provider: {formatProviderLabel(project.sourceCode)} | Auth:{' '}
+                          {formatAuthTypeLabel(project.authType)}
+                        </p>
                         {project.authType === 'github_app' ? (
-                          <p className="project-detail">App ID: {project.appId} | Install ID: {project.installId}</p>
+                          <p className="project-detail">
+                            App ID: {project.appId} | Install ID: {project.installId}
+                          </p>
                         ) : (
                           <>
                             {project.baseUrl && (
                               <p className="project-detail">Base URL: {project.baseUrl}</p>
                             )}
-                            <p className="project-detail">Token credentials are stored server-side.</p>
+                            <p className="project-detail">
+                              Token credentials are stored server-side.
+                            </p>
                           </>
                         )}
                         {project.pemFileName && (
@@ -497,7 +531,7 @@ function App() {
                         </tr>
                       </thead>
                       <tbody>
-                        {errorEvents.map(errorEvent => {
+                        {errorEvents.map((errorEvent) => {
                           const req = errorEvent.request
                           const errorType = req?.event?.type ?? 'Unknown'
                           const errorValue = req?.event?.value ?? ''
@@ -506,7 +540,13 @@ function App() {
                             <tr
                               key={errorEvent.id}
                               className="errors-row"
-                              onClick={() => { setSelectedError(errorEvent); setShowLibFrames(false); setSelectedBucket(null); setStacktraceOpen(true); setBreadcrumbsOpen(true) }}
+                              onClick={() => {
+                                setSelectedError(errorEvent)
+                                setShowLibFrames(false)
+                                setSelectedBucket(null)
+                                setStacktraceOpen(true)
+                                setBreadcrumbsOpen(true)
+                              }}
                             >
                               <td className="errors-cell-error">
                                 <span className="error-type">{errorType}</span>
@@ -533,164 +573,283 @@ function App() {
             {activeMenu === 'issues' && selectedError && (
               <div className="errors-detail-full">
                 <div className="errors-detail-body">
-                          <div className="errors-detail-title">
-                            <span className="error-detail-type">{selectedError.request?.event?.type}</span>
-                            <span className="error-detail-value">{selectedError.request?.event?.value}</span>
-                          </div>
-                          <div className="errors-detail-meta-inline">
-                            <div className="meta-inline-item">
-                              <span className="meta-label">Events</span>
-                              <span className="meta-value">{selectedError.event_count}</span>
-                            </div>
-                            <div className="meta-inline-sep" />
-                            <div className="meta-inline-item">
-                              <span className="meta-label">First Seen</span>
-                              <span className="meta-value">{new Date(selectedError.first_seen).toLocaleString()}</span>
-                            </div>
-                            <div className="meta-inline-sep" />
-                            <div className="meta-inline-item">
-                              <span className="meta-label">Last Seen</span>
-                              <span className="meta-value">{new Date(selectedError.last_seen).toLocaleString()}</span>
-                            </div>
-                          </div>
+                  <div className="errors-detail-title">
+                    <span className="error-detail-type">{selectedError.request?.event?.type}</span>
+                    <span className="error-detail-value">
+                      {selectedError.request?.event?.value}
+                    </span>
+                  </div>
+                  <div className="errors-detail-meta-inline">
+                    <div className="meta-inline-item">
+                      <span className="meta-label">Events</span>
+                      <span className="meta-value">{selectedError.event_count}</span>
+                    </div>
+                    <div className="meta-inline-sep" />
+                    <div className="meta-inline-item">
+                      <span className="meta-label">First Seen</span>
+                      <span className="meta-value">
+                        {new Date(selectedError.first_seen).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="meta-inline-sep" />
+                    <div className="meta-inline-item">
+                      <span className="meta-label">Last Seen</span>
+                      <span className="meta-value">
+                        {new Date(selectedError.last_seen).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
 
-                          {(() => {
-                            const crumbs = selectedError.request?.breadcrumbs ?? []
-                            const withTime = crumbs
-                              .filter(c => c.timestamp)
-                              .map(c => ({ ...c, _ts: new Date(c.timestamp).getTime() }))
+                  {(() => {
+                    const crumbs = selectedError.request?.breadcrumbs ?? []
+                    const withTime = crumbs
+                      .filter((c) => c.timestamp)
+                      .map((c) => ({ ...c, _ts: new Date(c.timestamp).getTime() }))
 
-                            let buckets = []
-                            let maxCount = 1
-                            let visibleCrumbs = withTime
+                    let buckets = []
+                    let maxCount = 1
+                    let visibleCrumbs = withTime
 
-                            if (withTime.length > 0) {
-                              const minTs = Math.min(...withTime.map(c => c._ts))
-                              const maxTs = Math.max(...withTime.map(c => c._ts))
-                              const range = maxTs - minTs
-                              const bucketCount = Math.max(1, Math.min(30, Math.ceil(range / 1000)))
-                              const bucketSize = range / bucketCount || 1
+                    if (withTime.length > 0) {
+                      const minTs = Math.min(...withTime.map((c) => c._ts))
+                      const maxTs = Math.max(...withTime.map((c) => c._ts))
+                      const range = maxTs - minTs
+                      const bucketCount = Math.max(1, Math.min(30, Math.ceil(range / 1000)))
+                      const bucketSize = range / bucketCount || 1
 
-                              buckets = Array.from({ length: bucketCount }, (_, i) => {
-                                const start = minTs + i * bucketSize
-                                const end = start + bucketSize
-                                const items = withTime.filter(c => c._ts >= start && (i === bucketCount - 1 ? c._ts <= end : c._ts < end))
-                                return {
-                                  index: i, start, end,
-                                  total: items.length,
-                                  error: items.filter(c => c.level === 'error').length,
-                                  warning: items.filter(c => c.level === 'warning').length,
-                                  info: items.length - items.filter(c => c.level === 'error').length - items.filter(c => c.level === 'warning').length,
-                                }
-                              })
-                              maxCount = Math.max(...buckets.map(b => b.total), 1)
+                      buckets = Array.from({ length: bucketCount }, (_, i) => {
+                        const start = minTs + i * bucketSize
+                        const end = start + bucketSize
+                        const items = withTime.filter(
+                          (c) =>
+                            c._ts >= start && (i === bucketCount - 1 ? c._ts <= end : c._ts < end)
+                        )
+                        return {
+                          index: i,
+                          start,
+                          end,
+                          total: items.length,
+                          error: items.filter((c) => c.level === 'error').length,
+                          warning: items.filter((c) => c.level === 'warning').length,
+                          info:
+                            items.length -
+                            items.filter((c) => c.level === 'error').length -
+                            items.filter((c) => c.level === 'warning').length,
+                        }
+                      })
+                      maxCount = Math.max(...buckets.map((b) => b.total), 1)
 
-                              if (selectedBucket !== null) {
-                                visibleCrumbs = withTime.filter(c => c._ts >= buckets[selectedBucket].start && (selectedBucket === bucketCount - 1 ? c._ts <= buckets[selectedBucket].end : c._ts < buckets[selectedBucket].end))
-                              }
-                            }
+                      if (selectedBucket !== null) {
+                        visibleCrumbs = withTime.filter(
+                          (c) =>
+                            c._ts >= buckets[selectedBucket].start &&
+                            (selectedBucket === bucketCount - 1
+                              ? c._ts <= buckets[selectedBucket].end
+                              : c._ts < buckets[selectedBucket].end)
+                        )
+                      }
+                    }
 
-                            return (
-                              <>
-                                {withTime.length > 0 && (
-                                  <div className="crumb-chart">
-                                    <div className="crumb-chart-bars">
-                                      {buckets.map(bucket => (
-                                        <div
-                                          key={bucket.index}
-                                          className={`crumb-bar-col ${selectedBucket === bucket.index ? 'selected' : ''} ${bucket.total === 0 ? 'empty' : ''}`}
-                                          onClick={() => setSelectedBucket(selectedBucket === bucket.index ? null : bucket.index)}
-                                          title={`${new Date(bucket.start).toLocaleTimeString()} — ${bucket.total} logs`}
-                                        >
-                                          <div className="crumb-bar-stack" style={{ height: `${(bucket.total / maxCount) * 100}%` }}>
-                                            {bucket.error > 0 && <div className="crumb-bar-seg seg-error" style={{ flex: bucket.error }} />}
-                                            {bucket.warning > 0 && <div className="crumb-bar-seg seg-warning" style={{ flex: bucket.warning }} />}
-                                            {bucket.info > 0 && <div className="crumb-bar-seg seg-info" style={{ flex: bucket.info }} />}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                    <div className="crumb-chart-axis">
-                                      <span>{new Date(buckets[0].start).toLocaleTimeString()}</span>
-                                      <span>{new Date(buckets[buckets.length - 1].end).toLocaleTimeString()}</span>
-                                    </div>
-                                    {selectedBucket !== null && (
-                                      <div className="crumb-chart-filter">
-                                        <span>{new Date(buckets[selectedBucket].start).toLocaleTimeString()} — {visibleCrumbs.length} logs</span>
-                                        <button onClick={() => setSelectedBucket(null)}>Clear</button>
-                                      </div>
+                    return (
+                      <>
+                        {withTime.length > 0 && (
+                          <div className="crumb-chart">
+                            <div className="crumb-chart-bars">
+                              {buckets.map((bucket) => (
+                                <div
+                                  key={bucket.index}
+                                  role="button"
+                                  tabIndex={0}
+                                  className={`crumb-bar-col ${selectedBucket === bucket.index ? 'selected' : ''} ${bucket.total === 0 ? 'empty' : ''}`}
+                                  onClick={() =>
+                                    setSelectedBucket(
+                                      selectedBucket === bucket.index ? null : bucket.index
+                                    )
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter' || e.key === ' ')
+                                      setSelectedBucket(
+                                        selectedBucket === bucket.index ? null : bucket.index
+                                      )
+                                  }}
+                                  title={`${new Date(bucket.start).toLocaleTimeString()} — ${bucket.total} logs`}
+                                >
+                                  <div
+                                    className="crumb-bar-stack"
+                                    style={{ height: `${(bucket.total / maxCount) * 100}%` }}
+                                  >
+                                    {bucket.error > 0 && (
+                                      <div
+                                        className="crumb-bar-seg seg-error"
+                                        style={{ flex: bucket.error }}
+                                      />
+                                    )}
+                                    {bucket.warning > 0 && (
+                                      <div
+                                        className="crumb-bar-seg seg-warning"
+                                        style={{ flex: bucket.warning }}
+                                      />
+                                    )}
+                                    {bucket.info > 0 && (
+                                      <div
+                                        className="crumb-bar-seg seg-info"
+                                        style={{ flex: bucket.info }}
+                                      />
                                     )}
                                   </div>
-                                )}
-
-                                <div className="errors-detail-section">
-                                  <div className="section-header-row section-toggle" onClick={() => setStacktraceOpen(prev => !prev)}>
-                                    <h4><span className={`toggle-arrow ${stacktraceOpen ? 'open' : ''}`}>&#9656;</span> Stacktrace</h4>
-                                    <button
-                                      className="lib-toggle-btn"
-                                      onClick={e => { e.stopPropagation(); setShowLibFrames(prev => !prev) }}
-                                    >
-                                      {showLibFrames ? 'Hide' : 'Show'} library frames
-                                    </button>
-                                  </div>
-                                  {stacktraceOpen && (
-                                    <div className="stacktrace-viewer">
-                                      {(() => {
-                                        const allFrames = (selectedError.request?.event?.stacktrace ?? []).slice().reverse()
-                                        const appFrames = allFrames.filter(f => !f.filename.includes('/site-packages/') && !f.filename.includes('/lib/python'))
-                                        const libCount = allFrames.length - appFrames.length
-                                        const framesToShow = showLibFrames ? allFrames : appFrames
-                                        return (
-                                          <>
-                                            {!showLibFrames && libCount > 0 && (
-                                              <div className="lib-frames-collapsed" onClick={() => setShowLibFrames(true)}>
-                                                {libCount} library frames hidden
-                                              </div>
-                                            )}
-                                            {framesToShow.map((frame, idx) => {
-                                              const isAppCode = !frame.filename.includes('/site-packages/') && !frame.filename.includes('/lib/python')
-                                              return (
-                                                <div key={idx} className={`stacktrace-frame ${isAppCode ? 'app-code' : 'lib-code'}`}>
-                                                  <div className="frame-header">
-                                                    <span className="frame-function">{frame.function}</span>
-                                                    <span className="frame-location">{frame.filename}:{frame.lineno}</span>
-                                                  </div>
-                                                  {frame.code && (
-                                                    <pre className="frame-code">{frame.code}</pre>
-                                                  )}
-                                                </div>
-                                              )
-                                            })}
-                                          </>
-                                        )
-                                      })()}
-                                    </div>
-                                  )}
                                 </div>
+                              ))}
+                            </div>
+                            <div className="crumb-chart-axis">
+                              <span>{new Date(buckets[0].start).toLocaleTimeString()}</span>
+                              <span>
+                                {new Date(buckets[buckets.length - 1].end).toLocaleTimeString()}
+                              </span>
+                            </div>
+                            {selectedBucket !== null && (
+                              <div className="crumb-chart-filter">
+                                <span>
+                                  {new Date(buckets[selectedBucket].start).toLocaleTimeString()} —{' '}
+                                  {visibleCrumbs.length} logs
+                                </span>
+                                <button onClick={() => setSelectedBucket(null)}>Clear</button>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
-                                <div className="errors-detail-section">
-                                  <div className="section-header-row section-toggle" onClick={() => setBreadcrumbsOpen(prev => !prev)}>
-                                    <h4><span className={`toggle-arrow ${breadcrumbsOpen ? 'open' : ''}`}>&#9656;</span> Breadcrumbs</h4>
-                                  </div>
-                                  {breadcrumbsOpen && (
-                                    <div className="breadcrumbs-viewer">
-                                      {visibleCrumbs.map((crumb, idx) => (
-                                        <div key={idx} className={`breadcrumb-item level-${crumb.level ?? 'info'}`}>
-                                          <div className="breadcrumb-header">
-                                            <span className={`breadcrumb-level ${crumb.level ?? 'info'}`}>{(crumb.level ?? 'info').toUpperCase()}</span>
-                                            <span className="breadcrumb-category">{crumb.category ?? ''}</span>
-                                            <span className="breadcrumb-time">{crumb.timestamp ? new Date(crumb.timestamp).toLocaleTimeString() : ''}</span>
+                        <div className="errors-detail-section">
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            className="section-header-row section-toggle"
+                            onClick={() => setStacktraceOpen((prev) => !prev)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ')
+                                setStacktraceOpen((prev) => !prev)
+                            }}
+                          >
+                            <h4>
+                              <span className={`toggle-arrow ${stacktraceOpen ? 'open' : ''}`}>
+                                &#9656;
+                              </span>{' '}
+                              Stacktrace
+                            </h4>
+                            <button
+                              className="lib-toggle-btn"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setShowLibFrames((prev) => !prev)
+                              }}
+                            >
+                              {showLibFrames ? 'Hide' : 'Show'} library frames
+                            </button>
+                          </div>
+                          {stacktraceOpen && (
+                            <div className="stacktrace-viewer">
+                              {(() => {
+                                const allFrames = (selectedError.request?.event?.stacktrace ?? [])
+                                  .slice()
+                                  .reverse()
+                                const appFrames = allFrames.filter(
+                                  (f) =>
+                                    !f.filename.includes('/site-packages/') &&
+                                    !f.filename.includes('/lib/python')
+                                )
+                                const libCount = allFrames.length - appFrames.length
+                                const framesToShow = showLibFrames ? allFrames : appFrames
+                                return (
+                                  <>
+                                    {!showLibFrames && libCount > 0 && (
+                                      <div
+                                        role="button"
+                                        tabIndex={0}
+                                        className="lib-frames-collapsed"
+                                        onClick={() => setShowLibFrames(true)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter' || e.key === ' ')
+                                            setShowLibFrames(true)
+                                        }}
+                                      >
+                                        {libCount} library frames hidden
+                                      </div>
+                                    )}
+                                    {framesToShow.map((frame, idx) => {
+                                      const isAppCode =
+                                        !frame.filename.includes('/site-packages/') &&
+                                        !frame.filename.includes('/lib/python')
+                                      return (
+                                        <div
+                                          key={idx}
+                                          className={`stacktrace-frame ${isAppCode ? 'app-code' : 'lib-code'}`}
+                                        >
+                                          <div className="frame-header">
+                                            <span className="frame-function">{frame.function}</span>
+                                            <span className="frame-location">
+                                              {frame.filename}:{frame.lineno}
+                                            </span>
                                           </div>
-                                          <p className="breadcrumb-message">{crumb.message ?? ''}</p>
+                                          {frame.code && (
+                                            <pre className="frame-code">{frame.code}</pre>
+                                          )}
                                         </div>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                              </>
-                            )
-                          })()}
+                                      )
+                                    })}
+                                  </>
+                                )
+                              })()}
+                            </div>
+                          )}
                         </div>
+
+                        <div className="errors-detail-section">
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            className="section-header-row section-toggle"
+                            onClick={() => setBreadcrumbsOpen((prev) => !prev)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ')
+                                setBreadcrumbsOpen((prev) => !prev)
+                            }}
+                          >
+                            <h4>
+                              <span className={`toggle-arrow ${breadcrumbsOpen ? 'open' : ''}`}>
+                                &#9656;
+                              </span>{' '}
+                              Breadcrumbs
+                            </h4>
+                          </div>
+                          {breadcrumbsOpen && (
+                            <div className="breadcrumbs-viewer">
+                              {visibleCrumbs.map((crumb, idx) => (
+                                <div
+                                  key={idx}
+                                  className={`breadcrumb-item level-${crumb.level ?? 'info'}`}
+                                >
+                                  <div className="breadcrumb-header">
+                                    <span className={`breadcrumb-level ${crumb.level ?? 'info'}`}>
+                                      {(crumb.level ?? 'info').toUpperCase()}
+                                    </span>
+                                    <span className="breadcrumb-category">
+                                      {crumb.category ?? ''}
+                                    </span>
+                                    <span className="breadcrumb-time">
+                                      {crumb.timestamp
+                                        ? new Date(crumb.timestamp).toLocaleTimeString()
+                                        : ''}
+                                    </span>
+                                  </div>
+                                  <p className="breadcrumb-message">{crumb.message ?? ''}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )
+                  })()}
+                </div>
               </div>
             )}
             {activeMenu === 'analyze' && (
@@ -707,12 +866,10 @@ function App() {
                       className="analyze-input"
                       placeholder="Enter Job ID"
                       value={jobId}
-                      onChange={e => setJobId(e.target.value)}
+                      onChange={(e) => setJobId(e.target.value)}
                       disabled={isAnalyzing}
                     />
-                    {analyzeError && (
-                      <p className="analyze-error">{analyzeError}</p>
-                    )}
+                    {analyzeError && <p className="analyze-error">{analyzeError}</p>}
                     {analyzeResult?.data && (
                       <div className="analyze-result">
                         <div className="analyze-meta">
@@ -754,18 +911,28 @@ function App() {
 
         {/* 프로젝트 추가 모달 */}
         {showModal && (
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            aria-label="Close modal"
+            className="modal-overlay"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) handleCloseModal()
+            }}
+          >
+            <div role="dialog" aria-modal="true" className="modal">
               <div className="modal-header">
                 <h2>Add Project</h2>
-                <button className="modal-close" onClick={handleCloseModal}>×</button>
+                <button className="modal-close" onClick={handleCloseModal}>
+                  ×
+                </button>
               </div>
               <div className="modal-body">
                 <div className="form-field">
-                  <label>Source Code</label>
+                  <label htmlFor="source-code">Source Code</label>
                   <select
+                    id="source-code"
                     value={sourceCode}
-                    onChange={e => handleSourceCodeChange(e.target.value)}
+                    onChange={(e) => handleSourceCodeChange(e.target.value)}
                     className="form-select"
                   >
                     <option value="github">GitHub</option>
@@ -776,7 +943,8 @@ function App() {
                 {sourceCode === 'github' && (
                   <>
                     <div className="form-field">
-                      <label>PEM File</label>
+                      <label htmlFor="pem-file">PEM File</label>
+                      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                       <div
                         className={`file-upload ${isDragging ? 'dragging' : ''} ${pemFile ? 'has-file' : ''}`}
                         onDragOver={handleDragOver}
@@ -786,7 +954,7 @@ function App() {
                         <input
                           type="file"
                           accept=".pem"
-                          onChange={e => setPemFile(e.target.files[0] ?? null)}
+                          onChange={(e) => setPemFile(e.target.files[0] ?? null)}
                           id="pem-file"
                         />
                         <label htmlFor="pem-file" className="file-label">
@@ -807,22 +975,24 @@ function App() {
                     </div>
 
                     <div className="form-field">
-                      <label>App ID</label>
+                      <label htmlFor="app-id">App ID</label>
                       <input
+                        id="app-id"
                         type="text"
                         value={appId}
-                        onChange={e => setAppId(e.target.value)}
+                        onChange={(e) => setAppId(e.target.value)}
                         placeholder="Enter App ID"
                         className="form-input"
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Install ID</label>
+                      <label htmlFor="install-id">Install ID</label>
                       <input
+                        id="install-id"
                         type="text"
                         value={installId}
-                        onChange={e => setInstallId(e.target.value)}
+                        onChange={(e) => setInstallId(e.target.value)}
                         placeholder="Enter Install ID"
                         className="form-input"
                       />
@@ -833,22 +1003,24 @@ function App() {
                 {sourceCode === 'gitlab' && (
                   <>
                     <div className="form-field">
-                      <label>Base URL</label>
+                      <label htmlFor="base-url">Base URL</label>
                       <input
+                        id="base-url"
                         type="text"
                         value={gitlabBaseUrl}
-                        onChange={e => setGitlabBaseUrl(e.target.value)}
+                        onChange={(e) => setGitlabBaseUrl(e.target.value)}
                         placeholder="https://gitlab.com"
                         className="form-input"
                       />
                     </div>
 
                     <div className="form-field">
-                      <label>Access Token</label>
+                      <label htmlFor="access-token">Access Token</label>
                       <input
+                        id="access-token"
                         type="password"
                         value={accessToken}
-                        onChange={e => setAccessToken(e.target.value)}
+                        onChange={(e) => setAccessToken(e.target.value)}
                         placeholder="Enter GitLab Personal Access Token"
                         className="form-input"
                       />
@@ -858,11 +1030,12 @@ function App() {
 
                 {sourceCode === 'github' && (
                   <div className="form-field">
-                    <label>Repository</label>
+                    <label htmlFor="github-repo">Repository</label>
                     <input
+                      id="github-repo"
                       type="text"
                       value={githubRepoName}
-                      onChange={e => setGithubRepoName(e.target.value)}
+                      onChange={(e) => setGithubRepoName(e.target.value)}
                       placeholder="owner/repo (e.g., facebook/react)"
                       className="form-input"
                     />
@@ -882,7 +1055,7 @@ function App() {
                 </button>
               </div>
             </div>
-          </div>
+          </button>
         )}
       </div>
     )
@@ -1057,7 +1230,12 @@ function App() {
 
             <label className="field">
               <span>Password</span>
-              <input type="password" name="password" placeholder="••••••••" autoComplete="current-password" />
+              <input
+                type="password"
+                name="password"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
             </label>
 
             <button type="submit" className="login-button">
