@@ -528,6 +528,7 @@ function App() {
                           <th>Count</th>
                           <th>First Seen</th>
                           <th>Last Seen</th>
+                          <th>Analysis</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -560,6 +561,25 @@ function App() {
                               </td>
                               <td className="errors-cell-time">
                                 {new Date(errorEvent.last_seen).toLocaleString()}
+                              </td>
+                              <td className="errors-cell-analysis">
+                                {errorEvent.analyze_job_id ? (
+                                  <button
+                                    className="analysis-badge completed"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      setJobId(errorEvent.analyze_job_id)
+                                      setActiveMenu('analyze')
+                                      setAnalyzeResult(null)
+                                      setAnalyzeError('')
+                                    }}
+                                    title="View analysis result"
+                                  >
+                                    View Result
+                                  </button>
+                                ) : (
+                                  <span className="analysis-badge pending">Pending</span>
+                                )}
                               </td>
                             </tr>
                           )

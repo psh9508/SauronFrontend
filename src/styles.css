@@ -1,5 +1,11 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   color: #f7ddbc;
   background: #0d0706;
   font-synthesis: none;
@@ -70,13 +76,15 @@ input {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     #0a0505 0%,
     #1a0808 20%,
     #2d0a05 40%,
     #4a1008 60%,
     #6b1a0a 80%,
-    #8b2510 100%);
+    #8b2510 100%
+  );
 }
 
 .fire-sky {
@@ -97,24 +105,44 @@ input {
   animation: heatWave 3s ease-in-out infinite;
 }
 
-.wave-one { bottom: 20%; animation-delay: 0s; }
-.wave-two { bottom: 35%; animation-delay: 1s; }
-.wave-three { bottom: 50%; animation-delay: 2s; }
+.wave-one {
+  bottom: 20%;
+  animation-delay: 0s;
+}
+.wave-two {
+  bottom: 35%;
+  animation-delay: 1s;
+}
+.wave-three {
+  bottom: 50%;
+  animation-delay: 2s;
+}
 
 .flame-layer {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     transparent 0%,
     rgba(255, 100, 0, 0.1) 50%,
-    rgba(255, 60, 0, 0.2) 100%);
+    rgba(255, 60, 0, 0.2) 100%
+  );
 }
 
-.flame-back { height: 60%; opacity: 0.4; }
-.flame-mid { height: 40%; opacity: 0.6; }
-.flame-front { height: 25%; opacity: 0.8; }
+.flame-back {
+  height: 60%;
+  opacity: 0.4;
+}
+.flame-mid {
+  height: 40%;
+  opacity: 0.6;
+}
+.flame-front {
+  height: 25%;
+  opacity: 0.8;
+}
 
 .fire-glow {
   position: absolute;
@@ -160,73 +188,646 @@ input {
 }
 
 /* 20개 불씨 - 각각 다른 위치, 크기, 속도, 딜레이 */
-.spark-1 { left: 8%; bottom: 4%; width: 3px; height: 3px; animation: rise1 4.1s linear infinite 0.2s, sway1 1.3s ease-in-out infinite; }
-.spark-2 { left: 15%; bottom: 7%; width: 4px; height: 4px; animation: rise2 5.7s linear infinite 1.1s, sway2 1.9s ease-in-out infinite 0.4s; }
-.spark-3 { left: 22%; bottom: 3%; width: 2px; height: 2px; animation: rise3 3.8s linear infinite 0.5s, sway3 1.1s ease-in-out infinite 0.2s; }
-.spark-4 { left: 28%; bottom: 9%; width: 5px; height: 5px; animation: rise4 6.3s linear infinite 2.4s, sway4 2.4s ease-in-out infinite 0.8s; }
-.spark-5 { left: 35%; bottom: 5%; width: 3px; height: 3px; animation: rise5 4.5s linear infinite 0.8s, sway5 1.6s ease-in-out infinite 0.3s; }
-.spark-6 { left: 42%; bottom: 6%; width: 4px; height: 4px; animation: rise6 5.2s linear infinite 1.9s, sway6 2.1s ease-in-out infinite 1.1s; }
-.spark-7 { left: 48%; bottom: 4%; width: 2px; height: 2px; animation: rise7 3.4s linear infinite 0.3s, sway7 0.9s ease-in-out infinite; }
-.spark-8 { left: 55%; bottom: 8%; width: 5px; height: 5px; animation: rise8 6.8s linear infinite 3.2s, sway8 2.7s ease-in-out infinite 0.6s; }
-.spark-9 { left: 62%; bottom: 3%; width: 3px; height: 3px; animation: rise9 4.9s linear infinite 1.4s, sway9 1.5s ease-in-out infinite 0.9s; }
-.spark-10 { left: 68%; bottom: 7%; width: 4px; height: 4px; animation: rise10 5.5s linear infinite 0.6s, sway10 2.0s ease-in-out infinite 0.2s; }
-.spark-11 { left: 75%; bottom: 5%; width: 2px; height: 2px; animation: rise11 3.6s linear infinite 2.1s, sway11 1.2s ease-in-out infinite 0.5s; }
-.spark-12 { left: 82%; bottom: 6%; width: 4px; height: 4px; animation: rise12 5.9s linear infinite 0.9s, sway12 2.3s ease-in-out infinite 1.3s; }
-.spark-13 { left: 88%; bottom: 4%; width: 3px; height: 3px; animation: rise13 4.3s linear infinite 1.7s, sway13 1.4s ease-in-out infinite 0.7s; }
-.spark-14 { left: 12%; bottom: 11%; width: 3px; height: 3px; animation: rise14 5.1s linear infinite 2.8s, sway14 1.8s ease-in-out infinite 0.4s; }
-.spark-15 { left: 32%; bottom: 10%; width: 2px; height: 2px; animation: rise15 3.2s linear infinite 0.4s, sway15 1.0s ease-in-out infinite 0.1s; }
-.spark-16 { left: 45%; bottom: 12%; width: 4px; height: 4px; animation: rise16 6.1s linear infinite 3.5s, sway16 2.5s ease-in-out infinite 1.0s; }
-.spark-17 { left: 58%; bottom: 9%; width: 3px; height: 3px; animation: rise17 4.7s linear infinite 1.2s, sway17 1.7s ease-in-out infinite 0.6s; }
-.spark-18 { left: 72%; bottom: 11%; width: 5px; height: 5px; animation: rise18 7.2s linear infinite 2.6s, sway18 2.9s ease-in-out infinite 0.8s; }
-.spark-19 { left: 85%; bottom: 8%; width: 2px; height: 2px; animation: rise19 3.9s linear infinite 0.7s, sway19 1.1s ease-in-out infinite 0.3s; }
-.spark-20 { left: 92%; bottom: 5%; width: 3px; height: 3px; animation: rise20 4.4s linear infinite 1.5s, sway20 1.5s ease-in-out infinite 0.5s; }
+.spark-1 {
+  left: 8%;
+  bottom: 4%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise1 4.1s linear infinite 0.2s,
+    sway1 1.3s ease-in-out infinite;
+}
+.spark-2 {
+  left: 15%;
+  bottom: 7%;
+  width: 4px;
+  height: 4px;
+  animation:
+    rise2 5.7s linear infinite 1.1s,
+    sway2 1.9s ease-in-out infinite 0.4s;
+}
+.spark-3 {
+  left: 22%;
+  bottom: 3%;
+  width: 2px;
+  height: 2px;
+  animation:
+    rise3 3.8s linear infinite 0.5s,
+    sway3 1.1s ease-in-out infinite 0.2s;
+}
+.spark-4 {
+  left: 28%;
+  bottom: 9%;
+  width: 5px;
+  height: 5px;
+  animation:
+    rise4 6.3s linear infinite 2.4s,
+    sway4 2.4s ease-in-out infinite 0.8s;
+}
+.spark-5 {
+  left: 35%;
+  bottom: 5%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise5 4.5s linear infinite 0.8s,
+    sway5 1.6s ease-in-out infinite 0.3s;
+}
+.spark-6 {
+  left: 42%;
+  bottom: 6%;
+  width: 4px;
+  height: 4px;
+  animation:
+    rise6 5.2s linear infinite 1.9s,
+    sway6 2.1s ease-in-out infinite 1.1s;
+}
+.spark-7 {
+  left: 48%;
+  bottom: 4%;
+  width: 2px;
+  height: 2px;
+  animation:
+    rise7 3.4s linear infinite 0.3s,
+    sway7 0.9s ease-in-out infinite;
+}
+.spark-8 {
+  left: 55%;
+  bottom: 8%;
+  width: 5px;
+  height: 5px;
+  animation:
+    rise8 6.8s linear infinite 3.2s,
+    sway8 2.7s ease-in-out infinite 0.6s;
+}
+.spark-9 {
+  left: 62%;
+  bottom: 3%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise9 4.9s linear infinite 1.4s,
+    sway9 1.5s ease-in-out infinite 0.9s;
+}
+.spark-10 {
+  left: 68%;
+  bottom: 7%;
+  width: 4px;
+  height: 4px;
+  animation:
+    rise10 5.5s linear infinite 0.6s,
+    sway10 2s ease-in-out infinite 0.2s;
+}
+.spark-11 {
+  left: 75%;
+  bottom: 5%;
+  width: 2px;
+  height: 2px;
+  animation:
+    rise11 3.6s linear infinite 2.1s,
+    sway11 1.2s ease-in-out infinite 0.5s;
+}
+.spark-12 {
+  left: 82%;
+  bottom: 6%;
+  width: 4px;
+  height: 4px;
+  animation:
+    rise12 5.9s linear infinite 0.9s,
+    sway12 2.3s ease-in-out infinite 1.3s;
+}
+.spark-13 {
+  left: 88%;
+  bottom: 4%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise13 4.3s linear infinite 1.7s,
+    sway13 1.4s ease-in-out infinite 0.7s;
+}
+.spark-14 {
+  left: 12%;
+  bottom: 11%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise14 5.1s linear infinite 2.8s,
+    sway14 1.8s ease-in-out infinite 0.4s;
+}
+.spark-15 {
+  left: 32%;
+  bottom: 10%;
+  width: 2px;
+  height: 2px;
+  animation:
+    rise15 3.2s linear infinite 0.4s,
+    sway15 1s ease-in-out infinite 0.1s;
+}
+.spark-16 {
+  left: 45%;
+  bottom: 12%;
+  width: 4px;
+  height: 4px;
+  animation:
+    rise16 6.1s linear infinite 3.5s,
+    sway16 2.5s ease-in-out infinite 1s;
+}
+.spark-17 {
+  left: 58%;
+  bottom: 9%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise17 4.7s linear infinite 1.2s,
+    sway17 1.7s ease-in-out infinite 0.6s;
+}
+.spark-18 {
+  left: 72%;
+  bottom: 11%;
+  width: 5px;
+  height: 5px;
+  animation:
+    rise18 7.2s linear infinite 2.6s,
+    sway18 2.9s ease-in-out infinite 0.8s;
+}
+.spark-19 {
+  left: 85%;
+  bottom: 8%;
+  width: 2px;
+  height: 2px;
+  animation:
+    rise19 3.9s linear infinite 0.7s,
+    sway19 1.1s ease-in-out infinite 0.3s;
+}
+.spark-20 {
+  left: 92%;
+  bottom: 5%;
+  width: 3px;
+  height: 3px;
+  animation:
+    rise20 4.4s linear infinite 1.5s,
+    sway20 1.5s ease-in-out infinite 0.5s;
+}
 
 /* 상승 애니메이션 - 각각 다른 높이 */
-@keyframes rise1 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-72vh) scale(0.1); opacity: 0; } }
-@keyframes rise2 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-85vh) scale(0.08); opacity: 0; } }
-@keyframes rise3 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-65vh) scale(0.15); opacity: 0; } }
-@keyframes rise4 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-92vh) scale(0.05); opacity: 0; } }
-@keyframes rise5 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-78vh) scale(0.12); opacity: 0; } }
-@keyframes rise6 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-82vh) scale(0.1); opacity: 0; } }
-@keyframes rise7 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-58vh) scale(0.18); opacity: 0; } }
-@keyframes rise8 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-95vh) scale(0.03); opacity: 0; } }
-@keyframes rise9 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-75vh) scale(0.11); opacity: 0; } }
-@keyframes rise10 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-88vh) scale(0.07); opacity: 0; } }
-@keyframes rise11 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-62vh) scale(0.16); opacity: 0; } }
-@keyframes rise12 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-86vh) scale(0.09); opacity: 0; } }
-@keyframes rise13 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-70vh) scale(0.13); opacity: 0; } }
-@keyframes rise14 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-80vh) scale(0.1); opacity: 0; } }
-@keyframes rise15 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-55vh) scale(0.2); opacity: 0; } }
-@keyframes rise16 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-90vh) scale(0.06); opacity: 0; } }
-@keyframes rise17 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-76vh) scale(0.12); opacity: 0; } }
-@keyframes rise18 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-98vh) scale(0.02); opacity: 0; } }
-@keyframes rise19 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-68vh) scale(0.14); opacity: 0; } }
-@keyframes rise20 { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-74vh) scale(0.11); opacity: 0; } }
+@keyframes rise1 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-72vh) scale(0.1);
+    opacity: 0;
+  }
+}
+@keyframes rise2 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-85vh) scale(0.08);
+    opacity: 0;
+  }
+}
+@keyframes rise3 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-65vh) scale(0.15);
+    opacity: 0;
+  }
+}
+@keyframes rise4 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-92vh) scale(0.05);
+    opacity: 0;
+  }
+}
+@keyframes rise5 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-78vh) scale(0.12);
+    opacity: 0;
+  }
+}
+@keyframes rise6 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-82vh) scale(0.1);
+    opacity: 0;
+  }
+}
+@keyframes rise7 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-58vh) scale(0.18);
+    opacity: 0;
+  }
+}
+@keyframes rise8 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-95vh) scale(0.03);
+    opacity: 0;
+  }
+}
+@keyframes rise9 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-75vh) scale(0.11);
+    opacity: 0;
+  }
+}
+@keyframes rise10 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-88vh) scale(0.07);
+    opacity: 0;
+  }
+}
+@keyframes rise11 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-62vh) scale(0.16);
+    opacity: 0;
+  }
+}
+@keyframes rise12 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-86vh) scale(0.09);
+    opacity: 0;
+  }
+}
+@keyframes rise13 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-70vh) scale(0.13);
+    opacity: 0;
+  }
+}
+@keyframes rise14 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-80vh) scale(0.1);
+    opacity: 0;
+  }
+}
+@keyframes rise15 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-55vh) scale(0.2);
+    opacity: 0;
+  }
+}
+@keyframes rise16 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-90vh) scale(0.06);
+    opacity: 0;
+  }
+}
+@keyframes rise17 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-76vh) scale(0.12);
+    opacity: 0;
+  }
+}
+@keyframes rise18 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-98vh) scale(0.02);
+    opacity: 0;
+  }
+}
+@keyframes rise19 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-68vh) scale(0.14);
+    opacity: 0;
+  }
+}
+@keyframes rise20 {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-74vh) scale(0.11);
+    opacity: 0;
+  }
+}
 
 /* 흔들림 애니메이션 - 각각 완전히 다른 패턴 */
-@keyframes sway1 { 0%,100% { margin-left: 0; } 50% { margin-left: 22px; } }
-@keyframes sway2 { 0%,100% { margin-left: 0; } 30% { margin-left: -18px; } 70% { margin-left: 25px; } }
-@keyframes sway3 { 0%,100% { margin-left: 0; } 25% { margin-left: 15px; } 75% { margin-left: -10px; } }
-@keyframes sway4 { 0%,100% { margin-left: 0; } 20% { margin-left: -30px; } 50% { margin-left: 12px; } 80% { margin-left: -20px; } }
-@keyframes sway5 { 0%,100% { margin-left: 0; } 40% { margin-left: 28px; } 60% { margin-left: -15px; } }
-@keyframes sway6 { 0%,100% { margin-left: 0; } 35% { margin-left: -22px; } 65% { margin-left: 18px; } }
-@keyframes sway7 { 0%,100% { margin-left: 0; } 50% { margin-left: -12px; } }
-@keyframes sway8 { 0%,100% { margin-left: 0; } 15% { margin-left: 20px; } 45% { margin-left: -35px; } 75% { margin-left: 15px; } }
-@keyframes sway9 { 0%,100% { margin-left: 0; } 33% { margin-left: -25px; } 66% { margin-left: 20px; } }
-@keyframes sway10 { 0%,100% { margin-left: 0; } 25% { margin-left: 30px; } 50% { margin-left: -8px; } 75% { margin-left: 18px; } }
-@keyframes sway11 { 0%,100% { margin-left: 0; } 50% { margin-left: -18px; } }
-@keyframes sway12 { 0%,100% { margin-left: 0; } 20% { margin-left: 15px; } 60% { margin-left: -28px; } 90% { margin-left: 10px; } }
-@keyframes sway13 { 0%,100% { margin-left: 0; } 40% { margin-left: -20px; } 80% { margin-left: 25px; } }
-@keyframes sway14 { 0%,100% { margin-left: 0; } 30% { margin-left: 22px; } 60% { margin-left: -12px; } }
-@keyframes sway15 { 0%,100% { margin-left: 0; } 50% { margin-left: 10px; } }
-@keyframes sway16 { 0%,100% { margin-left: 0; } 25% { margin-left: -32px; } 50% { margin-left: 18px; } 75% { margin-left: -15px; } }
-@keyframes sway17 { 0%,100% { margin-left: 0; } 35% { margin-left: 28px; } 70% { margin-left: -22px; } }
-@keyframes sway18 { 0%,100% { margin-left: 0; } 20% { margin-left: -25px; } 40% { margin-left: 35px; } 60% { margin-left: -18px; } 80% { margin-left: 20px; } }
-@keyframes sway19 { 0%,100% { margin-left: 0; } 45% { margin-left: 15px; } 55% { margin-left: -8px; } }
-@keyframes sway20 { 0%,100% { margin-left: 0; } 30% { margin-left: -20px; } 50% { margin-left: 22px; } 80% { margin-left: -10px; } }
+@keyframes sway1 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: 22px;
+  }
+}
+@keyframes sway2 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  30% {
+    margin-left: -18px;
+  }
+  70% {
+    margin-left: 25px;
+  }
+}
+@keyframes sway3 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  25% {
+    margin-left: 15px;
+  }
+  75% {
+    margin-left: -10px;
+  }
+}
+@keyframes sway4 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  20% {
+    margin-left: -30px;
+  }
+  50% {
+    margin-left: 12px;
+  }
+  80% {
+    margin-left: -20px;
+  }
+}
+@keyframes sway5 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  40% {
+    margin-left: 28px;
+  }
+  60% {
+    margin-left: -15px;
+  }
+}
+@keyframes sway6 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  35% {
+    margin-left: -22px;
+  }
+  65% {
+    margin-left: 18px;
+  }
+}
+@keyframes sway7 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: -12px;
+  }
+}
+@keyframes sway8 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  15% {
+    margin-left: 20px;
+  }
+  45% {
+    margin-left: -35px;
+  }
+  75% {
+    margin-left: 15px;
+  }
+}
+@keyframes sway9 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  33% {
+    margin-left: -25px;
+  }
+  66% {
+    margin-left: 20px;
+  }
+}
+@keyframes sway10 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  25% {
+    margin-left: 30px;
+  }
+  50% {
+    margin-left: -8px;
+  }
+  75% {
+    margin-left: 18px;
+  }
+}
+@keyframes sway11 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: -18px;
+  }
+}
+@keyframes sway12 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  20% {
+    margin-left: 15px;
+  }
+  60% {
+    margin-left: -28px;
+  }
+  90% {
+    margin-left: 10px;
+  }
+}
+@keyframes sway13 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  40% {
+    margin-left: -20px;
+  }
+  80% {
+    margin-left: 25px;
+  }
+}
+@keyframes sway14 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  30% {
+    margin-left: 22px;
+  }
+  60% {
+    margin-left: -12px;
+  }
+}
+@keyframes sway15 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  50% {
+    margin-left: 10px;
+  }
+}
+@keyframes sway16 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  25% {
+    margin-left: -32px;
+  }
+  50% {
+    margin-left: 18px;
+  }
+  75% {
+    margin-left: -15px;
+  }
+}
+@keyframes sway17 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  35% {
+    margin-left: 28px;
+  }
+  70% {
+    margin-left: -22px;
+  }
+}
+@keyframes sway18 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  20% {
+    margin-left: -25px;
+  }
+  40% {
+    margin-left: 35px;
+  }
+  60% {
+    margin-left: -18px;
+  }
+  80% {
+    margin-left: 20px;
+  }
+}
+@keyframes sway19 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  45% {
+    margin-left: 15px;
+  }
+  55% {
+    margin-left: -8px;
+  }
+}
+@keyframes sway20 {
+  0%,
+  100% {
+    margin-left: 0;
+  }
+  30% {
+    margin-left: -20px;
+  }
+  50% {
+    margin-left: 22px;
+  }
+  80% {
+    margin-left: -10px;
+  }
+}
 
 @keyframes heatWave {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scaleY(1);
     opacity: 0.3;
   }
@@ -241,13 +842,15 @@ input {
   position: absolute;
   inset: 0;
   overflow: hidden;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     #0a0505 0%,
     #1a0808 20%,
     #2d0a05 40%,
     #4a1008 60%,
     #6b1a0a 80%,
-    #8b2510 100%);
+    #8b2510 100%
+  );
 }
 
 /* 하늘 - 화산재와 열기로 붉게 물든 */
@@ -265,7 +868,12 @@ input {
 .ash-cloud {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(80, 40, 30, 0.6) 0%, rgba(40, 20, 15, 0.3) 50%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(80, 40, 30, 0.6) 0%,
+    rgba(40, 20, 15, 0.3) 50%,
+    transparent 70%
+  );
   filter: blur(30px);
   animation: cloudDrift 20s ease-in-out infinite;
 }
@@ -335,7 +943,13 @@ input {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(90deg, transparent 0%, rgba(255, 80, 20, 0.05) 30%, rgba(255, 80, 20, 0.05) 70%, transparent 100%),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 80, 20, 0.05) 30%,
+      rgba(255, 80, 20, 0.05) 70%,
+      transparent 100%
+    ),
     linear-gradient(180deg, rgba(255, 100, 20, 0.15) 0%, transparent 30%);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
@@ -347,12 +961,14 @@ input {
   transform: translateX(-50%);
   width: 25%;
   height: 30%;
-  background: radial-gradient(ellipse,
+  background: radial-gradient(
+    ellipse,
     rgba(255, 255, 200, 0.9) 0%,
     rgba(255, 180, 50, 0.8) 20%,
     rgba(255, 100, 0, 0.6) 40%,
     rgba(200, 50, 0, 0.3) 60%,
-    transparent 80%);
+    transparent 80%
+  );
   filter: blur(10px);
   animation: craterPulse 2s ease-in-out infinite;
 }
@@ -386,13 +1002,15 @@ input {
 .lava-fountain {
   position: absolute;
   bottom: 0;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     rgba(255, 255, 220, 0.95) 0%,
     rgba(255, 220, 100, 0.9) 15%,
     rgba(255, 150, 30, 0.85) 35%,
     rgba(255, 80, 0, 0.7) 55%,
     rgba(200, 40, 0, 0.4) 75%,
-    transparent 100%);
+    transparent 100%
+  );
   filter: blur(3px);
   animation: fountainErupt 0.8s ease-out infinite;
 }
@@ -432,10 +1050,12 @@ input {
   transform: translateX(-50%);
   width: 150%;
   height: 60%;
-  background: radial-gradient(ellipse,
+  background: radial-gradient(
+    ellipse,
     rgba(255, 150, 50, 0.5) 0%,
     rgba(255, 80, 0, 0.3) 40%,
-    transparent 70%);
+    transparent 70%
+  );
   filter: blur(20px);
   animation: glowPulse 1.5s ease-in-out infinite;
 }
@@ -444,12 +1064,14 @@ input {
 .volcanic-bomb {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%,
+  background: radial-gradient(
+    circle at 30% 30%,
     #fff8e0 0%,
     #ffcc00 20%,
     #ff6600 50%,
     #cc3300 80%,
-    #660000 100%);
+    #660000 100%
+  );
   box-shadow:
     0 0 20px rgba(255, 100, 0, 0.8),
     0 0 40px rgba(255, 50, 0, 0.4);
@@ -501,10 +1123,12 @@ input {
 .fire-particle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle,
+  background: radial-gradient(
+    circle,
     rgba(255, 220, 100, 0.9) 0%,
     rgba(255, 120, 0, 0.6) 50%,
-    transparent 100%);
+    transparent 100%
+  );
   filter: blur(2px);
   mix-blend-mode: screen;
 }
@@ -568,11 +1192,13 @@ input {
 .lava-flow {
   position: absolute;
   bottom: 0;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     rgba(255, 200, 100, 0.9) 0%,
     rgba(255, 130, 30, 0.95) 30%,
     rgba(220, 60, 0, 0.9) 60%,
-    rgba(150, 30, 0, 0.85) 100%);
+    rgba(150, 30, 0, 0.85) 100%
+  );
   box-shadow:
     0 0 30px rgba(255, 100, 0, 0.6),
     0 0 60px rgba(255, 50, 0, 0.3),
@@ -639,10 +1265,12 @@ input {
   left: 0;
   right: 0;
   height: 15vh;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     rgba(255, 120, 30, 0.9) 0%,
     rgba(200, 60, 0, 0.95) 40%,
-    rgba(120, 30, 0, 1) 100%);
+    rgba(120, 30, 0, 1) 100%
+  );
   box-shadow:
     0 -20px 60px rgba(255, 100, 0, 0.5),
     inset 0 10px 40px rgba(255, 180, 80, 0.3);
@@ -652,24 +1280,20 @@ input {
   position: absolute;
   inset: 0;
   background:
-    repeating-linear-gradient(90deg,
-      transparent 0%,
-      rgba(255, 200, 100, 0.15) 2%,
-      transparent 4%),
-    repeating-linear-gradient(0deg,
-      transparent 0%,
-      rgba(0, 0, 0, 0.2) 10%,
-      transparent 20%);
+    repeating-linear-gradient(90deg, transparent 0%, rgba(255, 200, 100, 0.15) 2%, transparent 4%),
+    repeating-linear-gradient(0deg, transparent 0%, rgba(0, 0, 0, 0.2) 10%, transparent 20%);
   animation: lavaSurface 3s linear infinite;
 }
 
 .lava-bubble {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%,
+  background: radial-gradient(
+    circle at 30% 30%,
     rgba(255, 255, 200, 0.9) 0%,
     rgba(255, 150, 50, 0.7) 50%,
-    transparent 100%);
+    transparent 100%
+  );
   animation: bubblePop 2s ease-in-out infinite;
 }
 
@@ -745,7 +1369,8 @@ input {
 
 /* ===== 애니메이션 ===== */
 @keyframes cloudDrift {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0) scale(1);
     opacity: 0.6;
   }
@@ -756,7 +1381,8 @@ input {
 }
 
 @keyframes craterPulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-50%) scale(1);
     opacity: 0.8;
   }
@@ -782,7 +1408,8 @@ input {
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: translateX(-50%) scale(1);
   }
@@ -856,17 +1483,34 @@ input {
   }
 }
 
-.particle-one { --offset: 0px; }
-.particle-two { --offset: 30px; }
-.particle-three { --offset: -20px; }
-.particle-four { --offset: 50px; }
-.particle-five { --offset: -40px; }
-.particle-six { --offset: 70px; }
-.particle-seven { --offset: -60px; }
-.particle-eight { --offset: 20px; }
+.particle-one {
+  --offset: 0px;
+}
+.particle-two {
+  --offset: 30px;
+}
+.particle-three {
+  --offset: -20px;
+}
+.particle-four {
+  --offset: 50px;
+}
+.particle-five {
+  --offset: -40px;
+}
+.particle-six {
+  --offset: 70px;
+}
+.particle-seven {
+  --offset: -60px;
+}
+.particle-eight {
+  --offset: 20px;
+}
 
 @keyframes lavaFlowAnim {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(-50%) scaleX(1);
     filter: blur(2px) brightness(1);
   }
@@ -878,15 +1522,20 @@ input {
 
 @keyframes lavaSurface {
   0% {
-    background-position: 0 0, 0 0;
+    background-position:
+      0 0,
+      0 0;
   }
   100% {
-    background-position: 100px 0, 0 50px;
+    background-position:
+      100px 0,
+      0 50px;
   }
 }
 
 @keyframes bubblePop {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(0);
     opacity: 0;
   }
@@ -934,7 +1583,8 @@ input {
   border-radius: 24px;
   background:
     linear-gradient(180deg, rgba(15, 5, 5, 0.95), rgba(8, 2, 2, 0.98)) padding-box,
-    linear-gradient(180deg, rgba(255, 120, 40, 0.5), rgba(180, 50, 10, 0.3), rgba(80, 20, 5, 0.4)) border-box;
+    linear-gradient(180deg, rgba(255, 120, 40, 0.5), rgba(180, 50, 10, 0.3), rgba(80, 20, 5, 0.4))
+      border-box;
   box-shadow:
     0 0 80px rgba(255, 80, 20, 0.25),
     0 0 40px rgba(255, 50, 10, 0.2),
@@ -946,7 +1596,8 @@ input {
 }
 
 @keyframes panelPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow:
       0 0 80px rgba(255, 80, 20, 0.25),
       0 0 40px rgba(255, 50, 10, 0.2),
@@ -969,11 +1620,13 @@ input {
   position: absolute;
   inset: -2px;
   border-radius: 26px;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     rgba(255, 150, 50, 0.15) 0%,
     transparent 30%,
     transparent 70%,
-    rgba(255, 80, 20, 0.1) 100%);
+    rgba(255, 80, 20, 0.1) 100%
+  );
   pointer-events: none;
   z-index: -1;
 }
@@ -986,10 +1639,7 @@ input {
   transform: translateX(-50%);
   width: 60%;
   height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 180, 100, 0.6),
-    transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 180, 100, 0.6), transparent);
 }
 
 /* ========================================
@@ -1057,25 +1707,53 @@ input {
   position: absolute;
   width: 18px;
   height: 50px;
-  background: linear-gradient(180deg,
-    #2a2a2a 0%,
-    #1a1a1a 30%,
-    #0d0d0d 60%,
-    #050505 100%);
+  background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 30%, #0d0d0d 60%, #050505 100%);
   clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
   box-shadow:
     inset 2px 0 8px rgba(255, 120, 40, 0.1),
     inset -2px 0 8px rgba(255, 120, 40, 0.1);
 }
 
-.spike-1 { top: -15px; left: 50%; transform: translateX(-50%) rotate(0deg); }
-.spike-2 { top: 5px; right: 15px; transform: rotate(45deg); }
-.spike-3 { top: 50%; right: -15px; transform: translateY(-50%) rotate(90deg); }
-.spike-4 { bottom: 5px; right: 15px; transform: rotate(135deg); }
-.spike-5 { bottom: -15px; left: 50%; transform: translateX(-50%) rotate(180deg); }
-.spike-6 { bottom: 5px; left: 15px; transform: rotate(225deg); }
-.spike-7 { top: 50%; left: -15px; transform: translateY(-50%) rotate(270deg); }
-.spike-8 { top: 5px; left: 15px; transform: rotate(315deg); }
+.spike-1 {
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(0deg);
+}
+.spike-2 {
+  top: 5px;
+  right: 15px;
+  transform: rotate(45deg);
+}
+.spike-3 {
+  top: 50%;
+  right: -15px;
+  transform: translateY(-50%) rotate(90deg);
+}
+.spike-4 {
+  bottom: 5px;
+  right: 15px;
+  transform: rotate(135deg);
+}
+.spike-5 {
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+}
+.spike-6 {
+  bottom: 5px;
+  left: 15px;
+  transform: rotate(225deg);
+}
+.spike-7 {
+  top: 50%;
+  left: -15px;
+  transform: translateY(-50%) rotate(270deg);
+}
+.spike-8 {
+  top: 5px;
+  left: 15px;
+  transform: rotate(315deg);
+}
 
 /* ========================================
    외부 불꽃 - Gooey Effect (유동적 화염)
@@ -1133,62 +1811,316 @@ input {
 .fire-particle {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 80%,
+  background: radial-gradient(
+    circle at 50% 80%,
     #ffffa0 0%,
     #ffcc00 25%,
     #ff8800 50%,
     #ff4400 75%,
-    #cc0000 100%);
+    #cc0000 100%
+  );
   mix-blend-mode: screen;
 }
 
 /* 20개 불꽃 입자 - 각각 다른 위치, 크기, 속도 */
-.fp-1 { left: 50%; bottom: 45%; width: 45px; height: 55px; animation: fireRise1 1.2s ease-out infinite; }
-.fp-2 { left: 35%; bottom: 48%; width: 35px; height: 45px; animation: fireRise2 1.5s ease-out infinite 0.1s; }
-.fp-3 { left: 65%; bottom: 46%; width: 40px; height: 50px; animation: fireRise3 1.3s ease-out infinite 0.2s; }
-.fp-4 { left: 25%; bottom: 50%; width: 30px; height: 40px; animation: fireRise4 1.8s ease-out infinite 0.3s; }
-.fp-5 { left: 75%; bottom: 47%; width: 38px; height: 48px; animation: fireRise5 1.4s ease-out infinite 0.15s; }
-.fp-6 { left: 45%; bottom: 44%; width: 42px; height: 52px; animation: fireRise6 1.6s ease-out infinite 0.25s; }
-.fp-7 { left: 55%; bottom: 49%; width: 36px; height: 46px; animation: fireRise1 1.7s ease-out infinite 0.4s; }
-.fp-8 { left: 30%; bottom: 46%; width: 32px; height: 42px; animation: fireRise2 1.35s ease-out infinite 0.35s; }
-.fp-9 { left: 70%; bottom: 48%; width: 44px; height: 54px; animation: fireRise3 1.55s ease-out infinite 0.5s; }
-.fp-10 { left: 40%; bottom: 51%; width: 28px; height: 38px; animation: fireRise4 1.25s ease-out infinite 0.45s; }
-.fp-11 { left: 60%; bottom: 45%; width: 48px; height: 58px; animation: fireRise5 1.65s ease-out infinite 0.6s; }
-.fp-12 { left: 20%; bottom: 52%; width: 26px; height: 36px; animation: fireRise6 1.9s ease-out infinite 0.55s; }
-.fp-13 { left: 80%; bottom: 50%; width: 34px; height: 44px; animation: fireRise1 1.45s ease-out infinite 0.7s; }
-.fp-14 { left: 48%; bottom: 43%; width: 50px; height: 60px; animation: fireRise2 1.1s ease-out infinite 0.65s; }
-.fp-15 { left: 52%; bottom: 47%; width: 38px; height: 48px; animation: fireRise3 1.75s ease-out infinite 0.8s; }
-.fp-16 { left: 38%; bottom: 49%; width: 30px; height: 40px; animation: fireRise4 1.4s ease-out infinite 0.75s; }
-.fp-17 { left: 62%; bottom: 44%; width: 42px; height: 52px; animation: fireRise5 1.5s ease-out infinite 0.85s; }
-.fp-18 { left: 28%; bottom: 53%; width: 24px; height: 34px; animation: fireRise6 2s ease-out infinite 0.9s; }
-.fp-19 { left: 72%; bottom: 51%; width: 36px; height: 46px; animation: fireRise1 1.6s ease-out infinite 0.95s; }
-.fp-20 { left: 50%; bottom: 42%; width: 55px; height: 65px; animation: fireRise2 1.3s ease-out infinite 0.05s; }
+.fp-1 {
+  left: 50%;
+  bottom: 45%;
+  width: 45px;
+  height: 55px;
+  animation: fireRise1 1.2s ease-out infinite;
+}
+.fp-2 {
+  left: 35%;
+  bottom: 48%;
+  width: 35px;
+  height: 45px;
+  animation: fireRise2 1.5s ease-out infinite 0.1s;
+}
+.fp-3 {
+  left: 65%;
+  bottom: 46%;
+  width: 40px;
+  height: 50px;
+  animation: fireRise3 1.3s ease-out infinite 0.2s;
+}
+.fp-4 {
+  left: 25%;
+  bottom: 50%;
+  width: 30px;
+  height: 40px;
+  animation: fireRise4 1.8s ease-out infinite 0.3s;
+}
+.fp-5 {
+  left: 75%;
+  bottom: 47%;
+  width: 38px;
+  height: 48px;
+  animation: fireRise5 1.4s ease-out infinite 0.15s;
+}
+.fp-6 {
+  left: 45%;
+  bottom: 44%;
+  width: 42px;
+  height: 52px;
+  animation: fireRise6 1.6s ease-out infinite 0.25s;
+}
+.fp-7 {
+  left: 55%;
+  bottom: 49%;
+  width: 36px;
+  height: 46px;
+  animation: fireRise1 1.7s ease-out infinite 0.4s;
+}
+.fp-8 {
+  left: 30%;
+  bottom: 46%;
+  width: 32px;
+  height: 42px;
+  animation: fireRise2 1.35s ease-out infinite 0.35s;
+}
+.fp-9 {
+  left: 70%;
+  bottom: 48%;
+  width: 44px;
+  height: 54px;
+  animation: fireRise3 1.55s ease-out infinite 0.5s;
+}
+.fp-10 {
+  left: 40%;
+  bottom: 51%;
+  width: 28px;
+  height: 38px;
+  animation: fireRise4 1.25s ease-out infinite 0.45s;
+}
+.fp-11 {
+  left: 60%;
+  bottom: 45%;
+  width: 48px;
+  height: 58px;
+  animation: fireRise5 1.65s ease-out infinite 0.6s;
+}
+.fp-12 {
+  left: 20%;
+  bottom: 52%;
+  width: 26px;
+  height: 36px;
+  animation: fireRise6 1.9s ease-out infinite 0.55s;
+}
+.fp-13 {
+  left: 80%;
+  bottom: 50%;
+  width: 34px;
+  height: 44px;
+  animation: fireRise1 1.45s ease-out infinite 0.7s;
+}
+.fp-14 {
+  left: 48%;
+  bottom: 43%;
+  width: 50px;
+  height: 60px;
+  animation: fireRise2 1.1s ease-out infinite 0.65s;
+}
+.fp-15 {
+  left: 52%;
+  bottom: 47%;
+  width: 38px;
+  height: 48px;
+  animation: fireRise3 1.75s ease-out infinite 0.8s;
+}
+.fp-16 {
+  left: 38%;
+  bottom: 49%;
+  width: 30px;
+  height: 40px;
+  animation: fireRise4 1.4s ease-out infinite 0.75s;
+}
+.fp-17 {
+  left: 62%;
+  bottom: 44%;
+  width: 42px;
+  height: 52px;
+  animation: fireRise5 1.5s ease-out infinite 0.85s;
+}
+.fp-18 {
+  left: 28%;
+  bottom: 53%;
+  width: 24px;
+  height: 34px;
+  animation: fireRise6 2s ease-out infinite 0.9s;
+}
+.fp-19 {
+  left: 72%;
+  bottom: 51%;
+  width: 36px;
+  height: 46px;
+  animation: fireRise1 1.6s ease-out infinite 0.95s;
+}
+.fp-20 {
+  left: 50%;
+  bottom: 42%;
+  width: 55px;
+  height: 65px;
+  animation: fireRise2 1.3s ease-out infinite 0.05s;
+}
 
 /* 뒤쪽 레이어 불꽃 입자 - 더 크고 느림 */
-.fp-b1 { left: 50%; bottom: 42%; width: 55px; height: 70px; animation: fireRise1 1.8s ease-out infinite; }
-.fp-b2 { left: 30%; bottom: 45%; width: 50px; height: 60px; animation: fireRise2 2.2s ease-out infinite 0.2s; }
-.fp-b3 { left: 70%; bottom: 43%; width: 52px; height: 65px; animation: fireRise3 2s ease-out infinite 0.4s; }
-.fp-b4 { left: 20%; bottom: 48%; width: 45px; height: 55px; animation: fireRise4 2.4s ease-out infinite 0.6s; }
-.fp-b5 { left: 80%; bottom: 46%; width: 48px; height: 58px; animation: fireRise5 2.1s ease-out infinite 0.3s; }
-.fp-b6 { left: 40%; bottom: 44%; width: 58px; height: 72px; animation: fireRise6 2.5s ease-out infinite 0.5s; }
-.fp-b7 { left: 60%; bottom: 47%; width: 54px; height: 68px; animation: fireRise1 2.3s ease-out infinite 0.7s; }
-.fp-b8 { left: 25%; bottom: 50%; width: 42px; height: 52px; animation: fireRise2 2.6s ease-out infinite 0.8s; }
-.fp-b9 { left: 75%; bottom: 49%; width: 46px; height: 56px; animation: fireRise3 2.2s ease-out infinite 0.9s; }
-.fp-b10 { left: 45%; bottom: 41%; width: 60px; height: 75px; animation: fireRise4 1.9s ease-out infinite 0.1s; }
-.fp-b11 { left: 55%; bottom: 43%; width: 50px; height: 62px; animation: fireRise5 2.4s ease-out infinite 0.35s; }
-.fp-b12 { left: 35%; bottom: 46%; width: 48px; height: 58px; animation: fireRise6 2.7s ease-out infinite 0.55s; }
+.fp-b1 {
+  left: 50%;
+  bottom: 42%;
+  width: 55px;
+  height: 70px;
+  animation: fireRise1 1.8s ease-out infinite;
+}
+.fp-b2 {
+  left: 30%;
+  bottom: 45%;
+  width: 50px;
+  height: 60px;
+  animation: fireRise2 2.2s ease-out infinite 0.2s;
+}
+.fp-b3 {
+  left: 70%;
+  bottom: 43%;
+  width: 52px;
+  height: 65px;
+  animation: fireRise3 2s ease-out infinite 0.4s;
+}
+.fp-b4 {
+  left: 20%;
+  bottom: 48%;
+  width: 45px;
+  height: 55px;
+  animation: fireRise4 2.4s ease-out infinite 0.6s;
+}
+.fp-b5 {
+  left: 80%;
+  bottom: 46%;
+  width: 48px;
+  height: 58px;
+  animation: fireRise5 2.1s ease-out infinite 0.3s;
+}
+.fp-b6 {
+  left: 40%;
+  bottom: 44%;
+  width: 58px;
+  height: 72px;
+  animation: fireRise6 2.5s ease-out infinite 0.5s;
+}
+.fp-b7 {
+  left: 60%;
+  bottom: 47%;
+  width: 54px;
+  height: 68px;
+  animation: fireRise1 2.3s ease-out infinite 0.7s;
+}
+.fp-b8 {
+  left: 25%;
+  bottom: 50%;
+  width: 42px;
+  height: 52px;
+  animation: fireRise2 2.6s ease-out infinite 0.8s;
+}
+.fp-b9 {
+  left: 75%;
+  bottom: 49%;
+  width: 46px;
+  height: 56px;
+  animation: fireRise3 2.2s ease-out infinite 0.9s;
+}
+.fp-b10 {
+  left: 45%;
+  bottom: 41%;
+  width: 60px;
+  height: 75px;
+  animation: fireRise4 1.9s ease-out infinite 0.1s;
+}
+.fp-b11 {
+  left: 55%;
+  bottom: 43%;
+  width: 50px;
+  height: 62px;
+  animation: fireRise5 2.4s ease-out infinite 0.35s;
+}
+.fp-b12 {
+  left: 35%;
+  bottom: 46%;
+  width: 48px;
+  height: 58px;
+  animation: fireRise6 2.7s ease-out infinite 0.55s;
+}
 
 /* 가장 뒤 레이어 불꽃 입자 - 가장 크고 느림 */
-.fp-f1 { left: 50%; bottom: 40%; width: 70px; height: 85px; animation: fireRise1 2.5s ease-out infinite; }
-.fp-f2 { left: 25%; bottom: 43%; width: 65px; height: 78px; animation: fireRise2 3s ease-out infinite 0.3s; }
-.fp-f3 { left: 75%; bottom: 41%; width: 68px; height: 82px; animation: fireRise3 2.8s ease-out infinite 0.5s; }
-.fp-f4 { left: 15%; bottom: 46%; width: 58px; height: 70px; animation: fireRise4 3.2s ease-out infinite 0.7s; }
-.fp-f5 { left: 85%; bottom: 44%; width: 62px; height: 75px; animation: fireRise5 2.9s ease-out infinite 0.4s; }
-.fp-f6 { left: 38%; bottom: 42%; width: 72px; height: 88px; animation: fireRise6 3.3s ease-out infinite 0.6s; }
-.fp-f7 { left: 62%; bottom: 45%; width: 66px; height: 80px; animation: fireRise1 3.1s ease-out infinite 0.8s; }
-.fp-f8 { left: 30%; bottom: 48%; width: 55px; height: 68px; animation: fireRise2 3.4s ease-out infinite 0.9s; }
-.fp-f9 { left: 70%; bottom: 47%; width: 60px; height: 72px; animation: fireRise3 2.7s ease-out infinite 0.2s; }
-.fp-f10 { left: 50%; bottom: 38%; width: 78px; height: 95px; animation: fireRise4 2.6s ease-out infinite 0.1s; }
+.fp-f1 {
+  left: 50%;
+  bottom: 40%;
+  width: 70px;
+  height: 85px;
+  animation: fireRise1 2.5s ease-out infinite;
+}
+.fp-f2 {
+  left: 25%;
+  bottom: 43%;
+  width: 65px;
+  height: 78px;
+  animation: fireRise2 3s ease-out infinite 0.3s;
+}
+.fp-f3 {
+  left: 75%;
+  bottom: 41%;
+  width: 68px;
+  height: 82px;
+  animation: fireRise3 2.8s ease-out infinite 0.5s;
+}
+.fp-f4 {
+  left: 15%;
+  bottom: 46%;
+  width: 58px;
+  height: 70px;
+  animation: fireRise4 3.2s ease-out infinite 0.7s;
+}
+.fp-f5 {
+  left: 85%;
+  bottom: 44%;
+  width: 62px;
+  height: 75px;
+  animation: fireRise5 2.9s ease-out infinite 0.4s;
+}
+.fp-f6 {
+  left: 38%;
+  bottom: 42%;
+  width: 72px;
+  height: 88px;
+  animation: fireRise6 3.3s ease-out infinite 0.6s;
+}
+.fp-f7 {
+  left: 62%;
+  bottom: 45%;
+  width: 66px;
+  height: 80px;
+  animation: fireRise1 3.1s ease-out infinite 0.8s;
+}
+.fp-f8 {
+  left: 30%;
+  bottom: 48%;
+  width: 55px;
+  height: 68px;
+  animation: fireRise2 3.4s ease-out infinite 0.9s;
+}
+.fp-f9 {
+  left: 70%;
+  bottom: 47%;
+  width: 60px;
+  height: 72px;
+  animation: fireRise3 2.7s ease-out infinite 0.2s;
+}
+.fp-f10 {
+  left: 50%;
+  bottom: 38%;
+  width: 78px;
+  height: 95px;
+  animation: fireRise4 2.6s ease-out infinite 0.1s;
+}
 
 /* 가장 뒤 레이어 코어 - 가장 크고 희미 */
 .core-f1 {
@@ -1236,12 +2168,14 @@ input {
 .fire-core {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle,
+  background: radial-gradient(
+    circle,
     #ffffcc 0%,
     #ffdd66 30%,
     #ff9900 60%,
     #ff5500 80%,
-    #cc2200 100%);
+    #cc2200 100%
+  );
 }
 
 .core-1 {
@@ -1288,13 +2222,15 @@ input {
 .outer-flame {
   position: absolute;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     rgba(255, 255, 150, 0.9) 0%,
     rgba(255, 200, 50, 0.8) 20%,
     rgba(255, 120, 0, 0.7) 45%,
     rgba(255, 60, 0, 0.5) 70%,
     rgba(180, 30, 0, 0.2) 90%,
-    transparent 100%);
+    transparent 100%
+  );
   filter: blur(12px);
   mix-blend-mode: screen;
 }
@@ -1387,14 +2323,16 @@ input {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: radial-gradient(circle,
+  background: radial-gradient(
+    circle,
     rgba(255, 255, 220, 1) 0%,
     rgba(255, 220, 100, 0.98) 15%,
     rgba(255, 180, 50, 0.95) 30%,
     rgba(255, 130, 20, 0.9) 50%,
     rgba(255, 80, 0, 0.85) 70%,
     rgba(200, 40, 0, 0.7) 85%,
-    rgba(100, 20, 0, 0.5) 100%);
+    rgba(100, 20, 0, 0.5) 100%
+  );
   box-shadow:
     inset 0 0 30px rgba(255, 200, 100, 0.5),
     0 0 40px rgba(255, 150, 50, 0.8),
@@ -1434,10 +2372,12 @@ input {
 .inner-flame {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(ellipse,
+  background: radial-gradient(
+    ellipse,
     rgba(255, 255, 200, 0.8) 0%,
     rgba(255, 180, 50, 0.5) 40%,
-    transparent 70%);
+    transparent 70%
+  );
   mix-blend-mode: screen;
 }
 
@@ -1480,7 +2420,8 @@ input {
 .pupil-core {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     transparent 0%,
     rgba(20, 0, 20, 0.7) 5%,
     rgba(10, 0, 10, 0.95) 15%,
@@ -1488,7 +2429,8 @@ input {
     rgba(0, 0, 0, 1) 75%,
     rgba(10, 0, 10, 0.95) 85%,
     rgba(20, 0, 20, 0.7) 95%,
-    transparent 100%);
+    transparent 100%
+  );
   border-radius: 50%;
   box-shadow:
     0 0 15px rgba(0, 0, 0, 1),
@@ -1505,9 +2447,7 @@ input {
   width: 20px;
   height: 100px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(ellipse,
-    rgba(80, 0, 40, 0.4) 0%,
-    transparent 60%);
+  background: radial-gradient(ellipse, rgba(80, 0, 40, 0.4) 0%, transparent 60%);
   filter: blur(5px);
 }
 
@@ -1515,10 +2455,12 @@ input {
 .eye-highlight {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle,
+  background: radial-gradient(
+    circle,
     rgba(255, 255, 255, 0.95) 0%,
     rgba(255, 255, 220, 0.7) 40%,
-    transparent 70%);
+    transparent 70%
+  );
   filter: blur(1px);
   z-index: 6;
 }
@@ -1556,11 +2498,7 @@ input {
 .fortress-spire {
   position: absolute;
   bottom: 0;
-  background: linear-gradient(180deg,
-    #1a1a1a 0%,
-    #0d0d0d 40%,
-    #050505 70%,
-    #020202 100%);
+  background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 40%, #050505 70%, #020202 100%);
   clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
   box-shadow:
     inset 2px 0 10px rgba(255, 100, 30, 0.08),
@@ -1609,10 +2547,12 @@ input {
   width: 100px;
   height: 40px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse,
+  background: radial-gradient(
+    ellipse,
     rgba(255, 120, 30, 0.3) 0%,
     rgba(255, 80, 0, 0.15) 50%,
-    transparent 80%);
+    transparent 80%
+  );
   filter: blur(10px);
 }
 
@@ -1633,8 +2573,13 @@ input {
 }
 
 @keyframes eyebrowFlicker {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .panel-header h1 {
@@ -1642,27 +2587,23 @@ input {
   font-size: clamp(1.8rem, 4vw, 2.2rem);
   font-weight: 900;
   letter-spacing: 0.18em;
-  background: linear-gradient(180deg,
-    #fff8e8 0%,
-    #ffd080 30%,
-    #ff8830 70%,
-    #cc4400 100%);
+  background: linear-gradient(180deg, #fff8e8 0%, #ffd080 30%, #ff8830 70%, #cc4400 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 20px rgba(255, 120, 40, 0.5))
-          drop-shadow(0 0 40px rgba(255, 80, 20, 0.3));
+  filter: drop-shadow(0 0 20px rgba(255, 120, 40, 0.5)) drop-shadow(0 0 40px rgba(255, 80, 20, 0.3));
   animation: titleGlow 4s ease-in-out infinite;
 }
 
 @keyframes titleGlow {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 20px rgba(255, 120, 40, 0.5))
-            drop-shadow(0 0 40px rgba(255, 80, 20, 0.3));
+      drop-shadow(0 0 40px rgba(255, 80, 20, 0.3));
   }
   50% {
     filter: drop-shadow(0 0 30px rgba(255, 140, 50, 0.7))
-            drop-shadow(0 0 50px rgba(255, 100, 30, 0.5));
+      drop-shadow(0 0 50px rgba(255, 100, 30, 0.5));
   }
 }
 
@@ -1691,9 +2632,7 @@ input {
   border-radius: 12px;
   color: #fff5e6;
   font-size: 1rem;
-  background: linear-gradient(180deg,
-    rgba(30, 10, 8, 0.9),
-    rgba(20, 5, 3, 0.95));
+  background: linear-gradient(180deg, rgba(30, 10, 8, 0.9), rgba(20, 5, 3, 0.95));
   outline: none;
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.4),
@@ -1726,12 +2665,14 @@ input {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  background: linear-gradient(180deg,
+  background: linear-gradient(
+    180deg,
     #ffe8a0 0%,
     #ffcc50 15%,
     #ff9920 40%,
     #ff6600 70%,
-    #cc3300 100%);
+    #cc3300 100%
+  );
   box-shadow:
     0 0 30px rgba(255, 120, 30, 0.5),
     0 0 60px rgba(255, 80, 20, 0.3),
@@ -1745,7 +2686,8 @@ input {
 }
 
 @keyframes buttonPulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow:
       0 0 30px rgba(255, 120, 30, 0.5),
       0 0 60px rgba(255, 80, 20, 0.3),
@@ -1770,10 +2712,7 @@ input {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: left 500ms ease;
 }
 
@@ -1832,16 +2771,11 @@ input {
   font-weight: 900;
   letter-spacing: 0.1em;
   margin: 0 0 16px;
-  background: linear-gradient(180deg,
-    #fff8e8 0%,
-    #ffd080 30%,
-    #ff8830 70%,
-    #cc4400 100%);
+  background: linear-gradient(180deg, #fff8e8 0%, #ffd080 30%, #ff8830 70%, #cc4400 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 30px rgba(255, 120, 40, 0.6))
-          drop-shadow(0 0 60px rgba(255, 80, 20, 0.4));
+  filter: drop-shadow(0 0 30px rgba(255, 120, 40, 0.6)) drop-shadow(0 0 60px rgba(255, 80, 20, 0.4));
 }
 
 .welcome-subtitle {
@@ -1889,9 +2823,7 @@ input {
 /* 사이드바 */
 .sidebar {
   width: 240px;
-  background: linear-gradient(180deg,
-    rgba(20, 8, 6, 0.98),
-    rgba(12, 4, 3, 0.99));
+  background: linear-gradient(180deg, rgba(20, 8, 6, 0.98), rgba(12, 4, 3, 0.99));
   border-right: 1px solid rgba(255, 100, 40, 0.2);
   display: flex;
   flex-direction: column;
@@ -1910,11 +2842,13 @@ input {
   width: 36px;
   height: 24px;
   border-radius: 50%;
-  background: radial-gradient(ellipse 50% 80% at center,
+  background: radial-gradient(
+    ellipse 50% 80% at center,
     #ffaa00 0%,
     #ff6600 30%,
     #cc3300 60%,
-    #660000 100%);
+    #660000 100%
+  );
   box-shadow:
     0 0 15px rgba(255, 100, 40, 0.6),
     0 0 30px rgba(255, 80, 20, 0.3),
@@ -1932,10 +2866,7 @@ input {
   transform: translate(-50%, -50%);
   width: 4px;
   height: 16px;
-  background: linear-gradient(180deg,
-    #000 0%,
-    #1a0000 50%,
-    #000 100%);
+  background: linear-gradient(180deg, #000 0%, #1a0000 50%, #000 100%);
   border-radius: 2px;
   box-shadow:
     0 0 6px rgba(255, 100, 0, 0.8),
@@ -1956,7 +2887,8 @@ input {
 }
 
 @keyframes eyePulse {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow:
       0 0 15px rgba(255, 100, 40, 0.6),
       0 0 30px rgba(255, 80, 20, 0.3),
@@ -2007,9 +2939,7 @@ input {
 }
 
 .nav-item.active {
-  background: linear-gradient(90deg,
-    rgba(255, 100, 40, 0.25),
-    rgba(255, 80, 30, 0.1));
+  background: linear-gradient(90deg, rgba(255, 100, 40, 0.25), rgba(255, 80, 30, 0.1));
   color: #ffd0a0;
   box-shadow: inset 3px 0 0 #ff8830;
 }
@@ -2086,10 +3016,7 @@ input {
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(180deg,
-    #ff9920 0%,
-    #ff6600 50%,
-    #cc3300 100%);
+  background: linear-gradient(180deg, #ff9920 0%, #ff6600 50%, #cc3300 100%);
   color: #1a0500;
   font-size: 0.9rem;
   font-weight: 700;
@@ -2134,9 +3061,7 @@ input {
   justify-content: space-between;
   gap: 16px;
   padding: 20px 22px;
-  background: linear-gradient(135deg,
-    rgba(30, 12, 9, 0.95),
-    rgba(16, 6, 5, 0.98));
+  background: linear-gradient(135deg, rgba(30, 12, 9, 0.95), rgba(16, 6, 5, 0.98));
   border: 1px solid rgba(255, 110, 45, 0.22);
   border-radius: 14px;
   box-shadow: 0 0 24px rgba(255, 90, 30, 0.08);
@@ -2166,7 +3091,9 @@ input {
   font-size: 0.95rem;
   font-weight: 600;
   outline: none;
-  transition: border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .issues-select:focus {
@@ -2201,12 +3128,13 @@ input {
   display: grid;
   gap: 12px;
   padding: 20px 22px;
-  background: linear-gradient(135deg,
-    rgba(24, 9, 7, 0.95),
-    rgba(13, 5, 4, 0.98));
+  background: linear-gradient(135deg, rgba(24, 9, 7, 0.95), rgba(13, 5, 4, 0.98));
   border: 1px solid rgba(255, 105, 42, 0.18);
   border-radius: 14px;
-  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .issue-card:hover {
@@ -2298,9 +3226,7 @@ input {
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: linear-gradient(135deg,
-    rgba(25, 10, 8, 0.9),
-    rgba(15, 5, 4, 0.95));
+  background: linear-gradient(135deg, rgba(25, 10, 8, 0.9), rgba(15, 5, 4, 0.95));
   border: 1px solid rgba(255, 100, 40, 0.2);
   border-radius: 12px;
   transition: all 200ms ease;
@@ -2368,9 +3294,7 @@ input {
 .modal {
   width: 90%;
   max-width: 480px;
-  background: linear-gradient(180deg,
-    rgba(25, 10, 8, 0.98),
-    rgba(15, 5, 4, 0.99));
+  background: linear-gradient(180deg, rgba(25, 10, 8, 0.98), rgba(15, 5, 4, 0.99));
   border: 1px solid rgba(255, 100, 40, 0.3);
   border-radius: 16px;
   box-shadow:
@@ -2483,7 +3407,7 @@ input {
   position: relative;
 }
 
-.file-upload input[type="file"] {
+.file-upload input[type='file'] {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -2551,8 +3475,13 @@ input {
 }
 
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 /* 파일 선택됨 상태 */
@@ -2584,10 +3513,7 @@ input {
   padding: 10px 24px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(180deg,
-    #ff9920 0%,
-    #ff6600 50%,
-    #cc3300 100%);
+  background: linear-gradient(180deg, #ff9920 0%, #ff6600 50%, #cc3300 100%);
   color: #1a0500;
   font-size: 0.9rem;
   font-weight: 700;
@@ -2627,7 +3553,9 @@ input {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========================================
@@ -2978,7 +3906,8 @@ input {
 
 /* 불꽃 폭발 1 */
 @keyframes burstPulse1 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: translate(-50%, -50%) scale(0.95);
     filter: blur(8px);
@@ -2997,7 +3926,8 @@ input {
 
 /* 불꽃 폭발 2 */
 @keyframes burstPulse2 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: translate(-50%, -50%) scale(1);
     filter: blur(10px);
@@ -3011,7 +3941,8 @@ input {
 
 /* 불꽃 폭발 3 */
 @keyframes burstPulse3 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: translate(-50%, -50%) scale(0.9);
     filter: blur(12px);
@@ -3030,7 +3961,8 @@ input {
 
 /* 내부 불꽃 1 */
 @keyframes innerFlameFlicker1 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: scale(1) translateY(0);
   }
@@ -3050,7 +3982,8 @@ input {
 
 /* 내부 불꽃 2 */
 @keyframes innerFlameFlicker2 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.65;
     transform: scale(1) translateX(0);
   }
@@ -3066,7 +3999,8 @@ input {
 
 /* 내부 불꽃 3 */
 @keyframes innerFlameFlicker3 {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.7;
     transform: translateX(-50%) scale(1);
   }
@@ -3110,7 +4044,8 @@ input {
 
 /* ----- 살짝 움직이는 눈동자 (pupil-gaze) ----- */
 @keyframes pupilGaze {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0) translateY(0);
   }
   /* 중앙에 오래 머무름 */
@@ -3162,7 +4097,8 @@ input {
 
 /* 하이라이트 깜빡임 */
 @keyframes highlightFlicker {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.8;
     transform: rotate(-25deg) scale(1);
   }
@@ -3360,9 +4296,7 @@ input {
 }
 
 .analyze-popup {
-  background: linear-gradient(180deg,
-    rgba(40, 20, 15, 0.95) 0%,
-    rgba(25, 12, 8, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(40, 20, 15, 0.95) 0%, rgba(25, 12, 8, 0.98) 100%);
   border: 1px solid rgba(255, 100, 40, 0.3);
   border-radius: 16px;
   padding: 32px;
@@ -3437,10 +4371,7 @@ input {
   padding: 12px 28px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(180deg,
-    #ff9920 0%,
-    #ff6600 50%,
-    #cc3300 100%);
+  background: linear-gradient(180deg, #ff9920 0%, #ff6600 50%, #cc3300 100%);
   color: #1a0500;
   font-size: 0.95rem;
   font-weight: 700;
@@ -3714,6 +4645,38 @@ input {
   font-size: 0.78rem;
   white-space: nowrap;
   width: 160px;
+}
+
+.errors-cell-analysis {
+  width: 120px;
+  text-align: center;
+}
+
+.analysis-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: default;
+}
+
+.analysis-badge.completed {
+  background: rgba(80, 200, 120, 0.15);
+  color: #50c878;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.analysis-badge.completed:hover {
+  background: rgba(80, 200, 120, 0.3);
+}
+
+.analysis-badge.pending {
+  background: rgba(255, 180, 60, 0.12);
+  color: rgba(255, 180, 60, 0.7);
 }
 
 /* ── Detail Page ── */
