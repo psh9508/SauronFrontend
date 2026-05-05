@@ -4510,6 +4510,9 @@ input {
 }
 
 .breadcrumb-link {
+  background: transparent;
+  border: none;
+  padding: 0;
   color: rgba(255, 200, 160, 0.5);
   font-size: 0.95rem;
   cursor: pointer;
